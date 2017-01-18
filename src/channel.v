@@ -1,18 +1,18 @@
-/* 
-Moves data from in_dat to out_dat. Data is transferred on the ports 
+/*
+Moves data from in_dat to out_dat. Data is transferred on the ports
 when both xx_set and xx_get are high on the rising edge of the clock.
 */
 
 module channel #(parameter WIDTH = 8) (
-	input wire clk, 
-	input wire [WIDTH-1:0] in_dat, 
+	input wire clk,
+	input wire [WIDTH-1:0] in_dat,
 	input wire in_set,
 	output reg in_get,
-	output reg [WIDTH-1:0] out_dat, 
-	output reg out_set, 
+	output reg [WIDTH-1:0] out_dat,
+	output reg out_set,
 	input wire out_get);
 
-    reg [WIDTH-1:0] buffer;
+	reg [WIDTH-1:0] buffer;
 
 	initial
 	begin
