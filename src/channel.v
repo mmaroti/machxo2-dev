@@ -1,34 +1,34 @@
 /*
 Moves data from in_dat to out_dat. Data is transferred on the ports
-when both xx_set and xx_get are high on the rising edge of the clock.
+when both xx_val and xx_rdy are high on the rising edge of the clock.
 */
 
 module channel #(parameter WIDTH = 8) (
 	input wire clk,
 	input wire [WIDTH-1:0] in_dat,
-	input wire in_set,
-	output reg in_get,
+	input wire in_val,
+	output reg in_rdy,
 	output reg [WIDTH-1:0] out_dat,
-	output reg out_set,
-	input wire out_get);
+	output reg out_val,
+	input wire out_rdy);
 
 	reg [WIDTH-1:0] buffer;
 
 	initial
 	begin
-		in_get = 1'b1;
+		in_rdy = 1'b1;
 		out_dat = {WIDTH{1'bx}};
-		out_set = 1'b0;
+		out_val = 1'b0;
 		buffer = {WIDTH{1'bx}};
 	end
 
 	always @(posedge clk)
 	begin
-		out_set <= (out_set && !out_get) || !in_get || in_set;
-		out_dat <= (out_set && !out_get) ? out_dat : (!in_get ? buffer : in_dat);
+		out_val <= (out_val && !out_rdy) || !in_rdy || in_val;
+		out_dat <= (out_val && !out_rdy) ? out_dat : (!in_rdy ? buffer : in_dat);
 
-		in_get <= !out_set || out_get;
-		buffer <= (out_set && !out_get && in_set && in_get) ? in_dat : buffer;
+		in_rdy <= !out_val || out_rdy;
+		buffer <= (out_val && !out_rdy && in_val && in_rdy) ? in_dat : buffer;
 	end
 
 endmodule
