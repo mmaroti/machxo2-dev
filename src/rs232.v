@@ -36,7 +36,7 @@ module rs232_transmitter #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115
 	localparam integer
 		COUNTER_WIDTH = clog2(STOP);
 
-	reg [COUNTER_WIDTH-1:0] counter;
+	reg [COUNTER_WIDTH:0] counter;
 	reg running;
 
 	always @(posedge clock or posedge reset)
