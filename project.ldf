@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BaliProject version="3.2" title="project" device="LCMXO2-7000HE-4TG144C" default_implementation="blink">
+    <Options/>
+    <Implementation title="blink" dir="blink.dir" description="blink" synthesis="lse" default_strategy="Strategy">
+        <Options/>
+        <Source name="blink.lpf" type="Logic Preference" type_short="LPF">
+            <Options/>
+        </Source>
+    </Implementation>
+    <Strategy name="Strategy" file="strategy.sty"/>
+</BaliProject>
