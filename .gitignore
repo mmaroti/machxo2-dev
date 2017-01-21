@@ -1,8 +1,5 @@
-.*.ini
-.recovery
-*.dir
-app/**/impl*
-*.xml
-*.html
-# app/*.tpf
-# app/*.ccl
+project/*
+!project/**/*.ldf
+!project/**/*.lpf
+!project/**/*.sty
+!project/**/*.v
