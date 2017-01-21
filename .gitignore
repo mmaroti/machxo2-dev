@@ -1,7 +1,8 @@
 .*.ini
 .recovery
+*.dir
+app/**/impl*
 *.xml
 *.html
-*.dir
-*.tpf
-*.ccl
+# app/*.tpf
+# app/*.ccl

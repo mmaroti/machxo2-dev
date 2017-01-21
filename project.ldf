@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BaliProject version="3.2" title="project" device="LCMXO2-7000HE-4TG144C" default_implementation="blink">
     <Options/>
-    <Implementation title="blink" dir="blink.dir" description="blink" synthesis="lse" default_strategy="Strategy">
+    <Implementation title="blink" dir="app/blink/impl" description="blink" synthesis="lse" default_strategy="Strategy">
         <Options def_top="top"/>
-        <Source name="blink.v" type="Verilog" type_short="Verilog">
+        <Source name="app/blink/top.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>
         </Source>
-        <Source name="blink.lpf" type="Logic Preference" type_short="LPF">
+        <Source name="app/blink/constraint.lpf" type="Logic Preference" type_short="LPF">
             <Options/>
         </Source>
-        <Source name="blink.xcf" type="Programming Project File" type_short="Programming">
+        <Source name="app/blink/programmer.xcf" type="Programming Project File" type_short="Programming">
             <Options/>
         </Source>
     </Implementation>
