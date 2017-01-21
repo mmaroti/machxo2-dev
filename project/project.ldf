@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BaliProject version="3.2" title="project" device="LCMXO2-7000HE-4TG144C" default_implementation="rs232tx">
     <Options/>
-    <Implementation title="blink" dir="app/blink/impl" description="blink" synthesis="lse" default_strategy="Area">
+    <Implementation title="blink" dir="blink" description="blink" synthesis="lse" default_strategy="Area">
         <Options def_top="top"/>
-        <Source name="app/blink/top.v" type="Verilog" type_short="Verilog">
+        <Source name="../verilog/blink_app.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>
         </Source>
-        <Source name="app/blink/constraint.lpf" type="Logic Preference" type_short="LPF">
-            <Options/>
-        </Source>
-        <Source name="app/blink/programmer.xcf" type="Programming Project File" type_short="Programming">
+        <Source name="blink.lpf" type="Logic Preference" type_short="LPF">
             <Options/>
         </Source>
     </Implementation>
-    <Implementation title="rs232tx" dir="app/rs232tx/impl" description="rs232tx" synthesis="lse" default_strategy="Area">
-        <Options def_top="rs232_transmitter"/>
-        <Source name="../rs232.v" type="Verilog" type_short="Verilog">
-            <Options top_module="rs232_transmitter"/>
+    <Implementation title="rs232tx" dir="rs232tx" description="rs232tx" synthesis="lse" default_strategy="Area">
+        <Options def_top="top"/>
+        <Source name="../verilog/rs232.v" type="Verilog" type_short="Verilog">
+            <Options top_module="rs232_send"/>
         </Source>
-        <Source name="project.lpf" type="Logic Preference" type_short="LPF">
+        <Source name="../verilog/rs232tx_app.v" type="Verilog" type_short="Verilog">
+            <Options top_module="top"/>
+        </Source>
+        <Source name="rs232tx.lpf" type="Logic Preference" type_short="LPF">
+            <Options/>
+        </Source>
+        <Source name="rs232tx/rs232tx.xcf" type="Programming Project File" type_short="Programming">
             <Options/>
         </Source>
     </Implementation>

@@ -3,7 +3,7 @@ This module provides RS232 communication. The clock frequency does not have to b
 integer multiple of the boud rate.
  */
 
-module rs232_transmitter #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
+module rs232_send #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	input wire clock,
 	input wire reset,
 	output reg rs232_rxd,
