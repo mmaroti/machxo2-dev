@@ -14,15 +14,18 @@ initial counter <= 30'b0;
 
 always @(posedge clock)
 begin
-	ft232_rxd = 1'b1;
-	ft232_cts_n = 1'b1;
+	ft232_rxd = counter[8];
+	ft232_cts_n = 1'b0;
+
 	counter <= counter + 30'b1;
-	// leds <= counter[29:22];
-	leds[0] <= ft232_txd;
-	leds[1] <= ft232_rxd;
-	leds[2] <= ft232_rts_n;
-	leds[3] <= ft232_cts_n;
-	leds[7:4] <= counter[29:26];
+	leds[0] <= !ft232_txd;
+	leds[1] <= !ft232_rxd;
+	leds[2] <= !ft232_rts_n;
+	leds[3] <= !ft232_cts_n;
+	leds[4] <= !counter[26];
+	leds[5] <= !counter[27];
+	leds[6] <= !counter[28];
+	leds[7] <= !counter[29];
 end
 
 // rs232_send #(.CLOCK_FREQ(133000000), .BAUD_RATE(115200))

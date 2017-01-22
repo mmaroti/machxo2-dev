@@ -19,6 +19,7 @@ your device you need to unload the default drivers by `sudo rmmod ftdi_sio` and 
 * http://m-labs.hk/milkymist-wiki/wiki/index.php%3Ftitle=Working_ftdi_eeprom.html
 * http://www.ftdichip.com/Drivers/D2XX.htm
 * http://m-labs.hk/milkymist-wiki/wiki/index.php%3Ftitle=Working_ftdi_eeprom.html
+* https://github.com/henryeherman/Platypus/blob/master/doc/source/fpgadevelopment.rst
 
 ## How to setup LXC/Centos for Lattice Diamond
 * need user access to device (chown/chgrp)
