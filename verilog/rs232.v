@@ -100,6 +100,17 @@ module rs232_send #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 
 endmodule
 
+module rs232_recv #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
+	input wire clock,
+	input wire reset_n,
+	input wire rs232_txd,
+	output reg cts_n,
+	output reg [7:0] data,
+	output reg valid,
+	input wire ready);
+
+endmodule
+
 /*
 module rs232_receiver #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	input wire clock,
