@@ -1,4 +1,4 @@
-// gcc rs232_app.c ftdi.c -o rs232_app  -lusb-1.0
+// gcc rs232_app.c ftdi.c -o rs232_app -lusb-1.0
 
 #include "ftdi.h"
 #include <stdio.h>
@@ -9,13 +9,13 @@ const int INTERFACE = INTERFACE_B;
 const int VENDOR = 0x0403;
 const int PRODUCT = 0x6010;
 const char *DESCRIPTION = "Lattice FTUSB Interface Cable";
-const int BAUDRATE = 115200 * 2;
-// const int BAUDRATE = 200;
+// const int BAUDRATE = 115200;
+const int BAUDRATE = 12000000;
 
 int main(void) {
   int ret;
   struct ftdi_context *ftdi;
-  unsigned char buffer[1024 * 1];
+  unsigned char buffer[1024 * 1024];
   unsigned short status;
 
   if ((ftdi = ftdi_new()) == 0) {
@@ -48,9 +48,13 @@ int main(void) {
   if ((ret = ftdi_usb_reset(ftdi)) < 0)
     goto error;
 
-  printf("Disabling bitbang\n");
-  if ((ret = ftdi_disable_bitbang(ftdi)) < 0)
+  printf("Setting RTS to 0\n");
+  if ((ret = ftdi_setrts(ftdi, 0)) < 0)
     goto error;
+
+  //  printf("Disabling bitbang\n");
+  //  if ((ret = ftdi_disable_bitbang(ftdi)) < 0)
+  //    goto error;
 
   // printf("Resetting the bitmode\n");
   // if ((ret = ftdi_set_bitmode(ftdi, 0xff, BITMODE_RESET)) < 0)
@@ -76,7 +80,7 @@ int main(void) {
   if ((ret = ftdi_usb_purge_buffers(ftdi)) < 0)
     goto error;
 
-  printf("Setting RTS\n");
+  printf("Setting RTS to 1\n");
   if ((ret = ftdi_setrts(ftdi, 1)) < 0)
     goto error;
 
@@ -96,6 +100,14 @@ int main(void) {
     goto error;
   printf("Read %d bytes (0x%02x%02x%02x%02x)\n", ret, buffer[0], buffer[1],
          buffer[2], buffer[3]);
+
+  for (int i = 1; i < sizeof(buffer); i++) {
+    if ((unsigned char)(buffer[i] - buffer[i - 1]) != 1) {
+      printf("Break in increasing sequence: 0x%02x 0x%02x\n", buffer[i - 1],
+             buffer[i]);
+      break;
+    }
+  }
 
   printf("Polling modem status\n");
   if ((ret = ftdi_poll_modem_status(ftdi, &status)) < 0)

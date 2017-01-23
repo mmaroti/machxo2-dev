@@ -5,14 +5,13 @@ integer multiple of the boud rate.
 
 module rs232_send #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	input wire clock,
-	input wire reset,
+	input wire reset_n,
 	output reg rs232_rxd,
 	input wire rs232_rts_n,
 	input wire [7:0] data,
 	input wire valid,
 	output reg ready);
-
-	localparam integer
+	localparam integer
 		START = 0,
 		BIT_0 = CLOCK_FREQ / BAUD_RATE,
 		BIT_1 = CLOCK_FREQ * 2 / BAUD_RATE,
@@ -25,76 +24,78 @@ module rs232_send #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 		STOP = CLOCK_FREQ * 9 / BAUD_RATE,
 		FINISH = CLOCK_FREQ * 10 / BAUD_RATE;
 
-	function integer clog2(input integer n); 
-		begin
-			clog2 = 0; 
-			while ((n >> clog2) > 1)
-				clog2 = clog2 + 1;
-		end
-	endfunction
-
 	localparam integer
-		COUNTER_WIDTH = clog2(STOP);
+		TIMER_WIDTH = $clog2(FINISH);
 
-	reg [COUNTER_WIDTH:0] counter;
+	reg [7:0] buffer;
+	reg [TIMER_WIDTH-1:0] timer;
 	reg running;
 
-	always @(posedge clock or posedge reset)
+	always @(posedge clock or negedge reset_n)
 	begin
-		if (!running || reset)
+		if (!reset_n || !running)
 		begin
-			rs232_rxd <= 1;
-			counter <= 0;
+			timer <= 0;
+			rs232_rxd <= 1'b1;
 		end
 		else
 		begin
-			case(counter)
-				START:
-					rs232_rxd <= 0;
-				BIT_0:
-					rs232_rxd <= data[0];
-				BIT_1:
-					rs232_rxd <= data[1];
-				BIT_2:
-					rs232_rxd <= data[2];
-				BIT_3:
-					rs232_rxd <= data[3];
-				BIT_4:
-					rs232_rxd <= data[4];
-				BIT_5:
-					rs232_rxd <= data[5];
-				BIT_6:
-					rs232_rxd <= data[6];
-				BIT_7:
-					rs232_rxd <= data[7];
-				STOP:
-					rs232_rxd <= 1;
-				default:
-					rs232_rxd <= rs232_rxd;
-			endcase
-			counter <= counter + 1;
+			if (timer == START)
+				rs232_rxd <= 1'b0;
+			else if (timer == BIT_0)
+				rs232_rxd <= buffer[0];
+			else if (timer == BIT_1)
+				rs232_rxd <= buffer[1];
+			else if (timer == BIT_2)
+				rs232_rxd <= buffer[2];
+			else if (timer == BIT_3)
+				rs232_rxd <= buffer[3];
+			else if (timer == BIT_4)
+				rs232_rxd <= buffer[4];
+			else if (timer == BIT_5)
+				rs232_rxd <= buffer[5];
+			else if (timer == BIT_6)
+				rs232_rxd <= buffer[6];
+			else if (timer == BIT_7)
+				rs232_rxd <= buffer[7];
+			else if (timer == STOP)
+				rs232_rxd <= 1'b1;
+
+			timer <= timer + 1'b1;
 		end
 	end
-
-	always @(posedge clock or posedge reset)
+	always @(posedge clock or negedge reset_n)
 	begin
-		if (reset)
+		if (!reset_n)
 		begin
-			running <= 0;
-			ready <= 0;
+			buffer <= 8'bx;
+			running <= 1'b0;
+			ready <= 1'b0;
 		end
-		else if (ready && valid)
+		else if (running)
 		begin
-			running <= 1;
-			ready <= 0;
+			if (timer == FINISH-1)
+			begin
+				buffer <= 8'bx;
+				running <= 1'b0;
+				ready <= !rs232_rts_n;
+			end
 		end
-		else if (running && counter == FINISH-1)
+		else
 		begin
-			running <= 0;
-			ready <= !rs232_rts_n;
+			if (ready && valid)
+			begin
+				buffer <= data;
+				running <= 1'b1;
+				ready <= 1'b0;
+			end
+			else
+			begin
+				buffer <= 8'bx;
+				running <= 1'b0;
+				ready <= !rs232_rts_n;
+			end
 		end
-		else if (!running)
-			ready <= !rs232_rts_n;
 	end
 
 endmodule
