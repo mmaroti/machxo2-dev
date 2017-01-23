@@ -13,7 +13,7 @@
     <Implementation title="rs232tx" dir="rs232tx" description="rs232tx" synthesis="lse" default_strategy="Area">
         <Options def_top="top"/>
         <Source name="../verilog/rs232.v" type="Verilog" type_short="Verilog">
-            <Options top_module="rs232_send"/>
+            <Options/>
         </Source>
         <Source name="../verilog/rs232tx_app.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>
