@@ -198,114 +198,77 @@ module rs232_send3 #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 
 endmodule
 
-/*
-module rs232_receiver #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
+module rs232_receive #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	input wire clock,
 	input wire reset,
-	input wire TXD,
-	output wire CTSn,
+	input wire txd_async,
 	output reg [7:0] data,
-	output reg valid,
-	input wire ready);
+	output reg valid);
 
-	localparam integer
-		START = CLOCK_FREQ / (2 * BAUD_RATE),
-		BIT_0 = CLOCK_FREQ * 3 / (2 * BAUD_RATE),
-		BIT_1 = CLOCK_FREQ * 5 / (2 * BAUD_RATE),
-		BIT_2 = CLOCK_FREQ * 7 / (2 * BAUD_RATE),
-		BIT_3 = CLOCK_FREQ * 9 / (2 * BAUD_RATE),
-		BIT_4 = CLOCK_FREQ * 11 / (2 * BAUD_RATE),
-		BIT_5 = CLOCK_FREQ * 13 / (2 * BAUD_RATE),
-		BIT_6 = CLOCK_FREQ * 15 / (2 * BAUD_RATE),
-		BIT_7 = CLOCK_FREQ * 17 / (2 * BAUD_RATE);
+	reg txd_temp, txd;
 
-	function integer clog2(input integer n);
-		begin
-			clog2 = 0;
-			while ((n >> clog2) > 1)
-				clog2 = clog2 + 1;
-		end
-	endfunction
-
-	localparam integer
-		COUNTER_MAX = 1 + CLOCK_FREQ / BAUD_RATE,
-		COUNTER_LOG = clog2(COUNTER_MAX);
-
-	reg [COUNTER_LOG-1:0] counter;
-	reg running;
-	reg pulse;
-
-	assign CTSn = !ready;
-
-	always @(posedge clock)
-		if (!running)
-		begin
-			counter <= 0;
-			pulse <= 0;
-		end
-		else
-		begin
-			case(counter)
-				START: pulse <= 1;
-				BIT_0:
-				begin
-					pulse <= 1;
-					data[0] <= TXD;
-				end
-
-				BIT_1:
-				begin
-					pulse <= 1;
-					data[1] <= TXD;
-				end
-
-				BIT_2:
-				begin
-					pulse <= 1;
-					data[2] <= TXD;
-				end
-
-				BIT_3:
-				begin
-					pulse <= 1;
-					data[3] <= TXD;
-				end
-
-				BIT_4:
-				begin
-					pulse <= 1;
-					data[4] <= TXD;
-				end
-
-				BIT_5:
-				begin
-					pulse <= 1;
-					data[5] <= TXD;
-				end
-
-				BIT_6:
-				begin
-					pulse <= 1;
-					data[6] <= TXD;
-				end
-
-				BIT_7:
-				begin
-					pulse <= 1;
-					data[7] <= TXD;
-				end
-
-				default:
-					pulse <= 0;
-			endcase
-			counter <= counter + 1;
-
-			counter <= counter + 1;
-		end
+	always @(posedge clock or posedge reset)
 	begin
+		if (reset)
+		begin
+			txd_temp = 1'b1;
+			txd <= 1'b1;
+		end	
+		else 
+		begin
+			txd_temp <= txd_async;
+			txd <= txd_temp;
+		end
+	end
 
+	localparam integer
+		START = (CLOCK_FREQ *  1) / (2 * BAUD_RATE),
+		BIT_0 = (CLOCK_FREQ *  3) / (2 * BAUD_RATE),
+		BIT_1 = (CLOCK_FREQ *  5) / (2 * BAUD_RATE),
+		BIT_2 = (CLOCK_FREQ *  7) / (2 * BAUD_RATE),
+		BIT_3 = (CLOCK_FREQ *  9) / (2 * BAUD_RATE),
+		BIT_4 = (CLOCK_FREQ * 11) / (2 * BAUD_RATE),
+		BIT_5 = (CLOCK_FREQ * 13) / (2 * BAUD_RATE),
+		BIT_6 = (CLOCK_FREQ * 15) / (2 * BAUD_RATE),
+		BIT_7 = (CLOCK_FREQ * 17) / (2 * BAUD_RATE),
+		STOP =  (CLOCK_FREQ * 19) / (2 * BAUD_RATE);
+
+	localparam integer TIMER_WIDTH = $clog2(STOP + 1);
+
+	reg [TIMER_WIDTH-1:0] timer;
+	
+	always @(posedge clock or posedge reset)
+	begin
+		if (reset)
+			timer <= 0;
+		else if (timer == 0)
+			timer <= txd ? 1 : 0;
+		else if (timer == START)
+			timer <= txd ? 0 : timer + 1;
+		else if (timer == STOP)
+			timer <= 0;
+		else
+			timer <= timer + 1;
+	end
+
+	always @(posedge clock or posedge reset)
+	begin
+		if (reset)
+			valid <= 1'b0;
+		else
+			valid <= timer == STOP && txd;
+	end
+
+	always @(posedge clock or posedge reset)
+	begin
+		if (reset)
+			data <= 8'b0;
+		else if (timer == BIT_0 || timer == BIT_1 || timer == BIT_2	|| timer == BIT_3
+			|| timer == BIT_4 || timer == BIT_5 || timer == BIT_6 || timer == BIT_7)
+		begin
+			data[6:0] <= data[7:1];
+			data[7] <= txd;
+		end
 	end
 
 endmodule
-
-*/
