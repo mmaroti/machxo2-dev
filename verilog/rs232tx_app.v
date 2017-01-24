@@ -26,7 +26,7 @@ begin
 	leds[7] <= !counter[7];
 end
 
-rs232_send #(.CLOCK_FREQ(133000000), .BAUD_RATE(12000000))
+rs232_send3 #(.CLOCK_FREQ(133000000), .BAUD_RATE(12000000))
 	send(clock, 1'b1, ft232_rxd, ft232_rts_n, counter, 1'b1, ready);
 
 always @(posedge clock)
