@@ -15,7 +15,7 @@ const int BAUDRATE = 12000000;
 int main(void) {
   int ret;
   struct ftdi_context *ftdi;
-  unsigned char buffer[1024 * 1024];
+  unsigned char buffer[1024];
   unsigned short status;
 
   if ((ftdi = ftdi_new()) == 0) {
@@ -48,9 +48,9 @@ int main(void) {
   if ((ret = ftdi_usb_reset(ftdi)) < 0)
     goto error;
 
-  printf("Setting RTS to 0\n");
-  if ((ret = ftdi_setrts(ftdi, 0)) < 0)
-    goto error;
+//  printf("Setting RTS to 0\n");
+//  if ((ret = ftdi_setrts(ftdi, 0)) < 0)
+//    goto error;
 
   //  printf("Disabling bitbang\n");
   //  if ((ret = ftdi_disable_bitbang(ftdi)) < 0)
@@ -85,14 +85,14 @@ int main(void) {
     goto error;
 
   for (int i = 0; i < sizeof(buffer); i++)
-    buffer[i] = 0x00;
+    buffer[i] = 0x0F;
 
   printf("Writing data\n");
   if ((ret = ftdi_write_data(ftdi, buffer, sizeof(buffer))) < 0)
     goto error;
   printf("Written %d bytes\n", ret);
 
-  //  printf("Sleeping for 2 seconds\n");
+  // printf("Sleeping for 2 seconds\n");
   //  sleep(2);
 
   printf("Reading data\n");

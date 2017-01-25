@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<BaliProject version="3.2" title="project" device="LCMXO2-7000HE-4TG144C" default_implementation="rs232tx">
+<BaliProject version="3.2" title="project" device="LCMXO2-7000HE-4TG144C" default_implementation="rs232rx">
     <Options/>
     <Implementation title="blink" dir="blink" description="blink" synthesis="lse" default_strategy="Area">
         <Options def_top="top"/>
@@ -10,10 +10,25 @@
             <Options/>
         </Source>
     </Implementation>
+    <Implementation title="rs232rx" dir="rs232rx" description="rs232rx" synthesis="lse" default_strategy="Area">
+        <Options def_top="top"/>
+        <Source name="../verilog/rs232.v" type="Verilog" type_short="Verilog">
+            <Options top_module="rs232_send3"/>
+        </Source>
+        <Source name="../verilog/rs232rx_app.v" type="Verilog" type_short="Verilog">
+            <Options top_module="top"/>
+        </Source>
+        <Source name="rs232rx.lpf" type="Logic Preference" type_short="LPF">
+            <Options/>
+        </Source>
+        <Source name="rs232rx/rs232rx.xcf" type="Programming Project File" type_short="Programming">
+            <Options/>
+        </Source>
+    </Implementation>
     <Implementation title="rs232tx" dir="rs232tx" description="rs232tx" synthesis="lse" default_strategy="Area">
         <Options def_top="top"/>
         <Source name="../verilog/rs232.v" type="Verilog" type_short="Verilog">
-            <Options top_module="rs232_receive"/>
+            <Options top_module="rs232_receive_bare"/>
         </Source>
         <Source name="../verilog/rs232tx_app.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>
