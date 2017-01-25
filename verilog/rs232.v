@@ -3,7 +3,7 @@ This module provides RS232 communication. The clock frequency does not have to b
 integer multiple of the boud rate.
 */
 
-module rs232_send #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
+module rs232_send #(parameter CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	input wire clock,
 	input wire reset_n,
 	output reg rs232_rxd,
@@ -212,9 +212,7 @@ module rs232_receive_bare #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=11520
 			txd_temp <= 4'b1111;
 		else
 		begin
-			txd_temp[0] <= txd_temp[1];
-			txd_temp[1] <= txd_temp[2];
-			txd_temp[2] <= txd_temp[3];
+			txd_temp[2:0] <= txd_temp[3:1];
 			txd_temp[3] <= rs232_txd;
 		end
 	end
@@ -231,33 +229,30 @@ module rs232_receive_bare #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=11520
 
 	localparam real UNIT = 1.0 * CLOCK_FREQ / BAUD_RATE;
 
-	localparam integer
-		START = UNIT * 0.5 + 0.5,
-		BIT_0 = UNIT * 1.5 + 0.5,
-		BIT_1 = UNIT * 2.5 + 0.5,
-		BIT_2 = UNIT * 3.5 + 0.5,
-		BIT_3 = UNIT * 4.5 + 0.5,
-		BIT_4 = UNIT * 5.5 + 0.5,
-		BIT_5 = UNIT * 6.5 + 0.5,
-		BIT_6 = UNIT * 7.5 + 0.5,
-		BIT_7 = UNIT * 8.5 + 0.5,
-		STOP =  UNIT * 9.5 + 0.5;
+	// rounded to the nearest integer
+	localparam [63:0]
+		START = UNIT * 0.5 - 0.5,
+		BIT_0 = UNIT * 1.5 - 0.5,
+		BIT_1 = UNIT * 2.5 - 0.5,
+		BIT_2 = UNIT * 3.5 - 0.5,
+		BIT_3 = UNIT * 4.5 - 0.5,
+		BIT_4 = UNIT * 5.5 - 0.5,
+		BIT_5 = UNIT * 6.5 - 0.5,
+		BIT_6 = UNIT * 7.5 - 0.5,
+		BIT_7 = UNIT * 8.5 - 0.5,
+		STOP =  UNIT * 9.5 - 0.5;
 
-	localparam integer TIMER_WIDTH = 1 + $clog2(STOP + 1);
+	localparam integer TIMER_WIDTH = $clog2(STOP + 1);
 
 	reg [TIMER_WIDTH-1:0] timer;
 	always @(posedge clock or negedge resetn)
 	begin
 		if (!resetn)
-			timer <= 0;
-		else if (timer == 0)
-			timer <= txd ? 0 : 1;
-		else if (timer == START)
-			timer <= txd ? 0 : timer + 1;
-		else if (timer == STOP)
-			timer <= 0;
+			timer <= 1'b0;
+		else if (((timer <= START) && txd) || timer == STOP)
+			timer <= 1'b0;
 		else
-			timer <= timer + 1;
+			timer <= timer + 1'b1;
 	end
 
 	always @(posedge clock or negedge resetn)
@@ -266,7 +261,6 @@ module rs232_receive_bare #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=11520
 			valid <= 1'b0;
 		else
 			valid <= timer == STOP && txd;
-//			valid <= timer == STOP;
 	end
 
 	always @(posedge clock or negedge resetn)
@@ -281,27 +275,4 @@ module rs232_receive_bare #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=11520
 		end
 	end
 
-/*
-	always @(posedge clock or negedge resetn)
-	begin
-		if (!resetn)
-			data <= 8'bx;
-		else if (timer == BIT_0)
-			data[0] <= txd;
-		else if (timer == BIT_1)
-			data[1] <= txd;
-		else if (timer == BIT_2)
-			data[2] <= txd;
-		else if (timer == BIT_3)
-			data[3] <= txd;
-		else if (timer == BIT_4)
-			data[4] <= txd;
-		else if (timer == BIT_5)
-			data[5] <= txd;
-		else if (timer == BIT_6)
-			data[6] <= txd;
-		else if (timer == BIT_7)
-			data[7] <= txd;
-	end
-*/
 endmodule

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<BaliProject version="3.2" title="project" device="LCMXO2-7000HE-4TG144C" default_implementation="rs232rx">
+<BaliProject version="3.2" title="project" device="LCMXO2-7000HE-4TG144C" default_implementation="reset">
     <Options/>
     <Implementation title="blink" dir="blink" description="blink" synthesis="lse" default_strategy="Area">
         <Options def_top="top"/>
@@ -7,6 +7,21 @@
             <Options top_module="top"/>
         </Source>
         <Source name="blink.lpf" type="Logic Preference" type_short="LPF">
+            <Options/>
+        </Source>
+    </Implementation>
+    <Implementation title="reset" dir="reset" description="reset" synthesis="lse" default_strategy="Strategy">
+        <Options def_top="top"/>
+        <Source name="../verilog/reset_app.v" type="Verilog" type_short="Verilog">
+            <Options top_module="top"/>
+        </Source>
+        <Source name="../verilog/reset.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="project.lpf" type="Logic Preference" type_short="LPF">
+            <Options/>
+        </Source>
+        <Source name="reset/reset.xcf" type="Programming Project File" type_short="Programming">
             <Options/>
         </Source>
     </Implementation>
