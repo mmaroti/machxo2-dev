@@ -15,7 +15,7 @@ const int BAUDRATE = 12000000;
 int main(void) {
   int ret;
   struct ftdi_context *ftdi;
-  unsigned char buffer[100000];
+  unsigned char buffer[1024 * 2];
   unsigned short status;
 
   if ((ftdi = ftdi_new()) == 0) {
@@ -100,6 +100,12 @@ int main(void) {
     goto error;
   printf("Read %d bytes (0x%02x%02x%02x%02x)\n", ret, buffer[0], buffer[1],
          buffer[2], buffer[3]);
+
+  printf("Dumping data:");
+  for (int i = 0; i < sizeof(buffer); i++)
+	for(int j = 0; j < 8; j++)
+		printf("%c", (buffer[i] >> j) & 1 == 1 ? '1' : '0');
+  printf("\n");
 
   for (int i = 1; i < sizeof(buffer); i++) {
     if ((unsigned char)(buffer[i] - buffer[i - 1]) != 1) {
