@@ -136,7 +136,7 @@ module rs232_send3 #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 		if (!resetn || !running)
 			timer <= 0;
 		else
-			timer <= timer + 1;
+			timer <= timer + 1'b1;
 	end
 
 	always @(posedge clock or negedge resetn)
