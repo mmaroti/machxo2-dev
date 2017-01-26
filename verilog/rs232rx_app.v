@@ -18,7 +18,7 @@ begin
 end
 
 wire resetn;
-assign resetn = counter > 20000000;
+resetn_gen resetn_get(.clock(clock), .resetn(resetn), .resetn_pio(1'b1));
 
 wire [7:0] data;
 wire valid;

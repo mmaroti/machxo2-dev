@@ -5,9 +5,9 @@ integer multiple of the boud rate.
 
 module rs232_send #(parameter CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	input wire clock,
-	input wire reset_n,
+	input wire resetn,
 	output reg rs232_rxd,
-	input wire rs232_rts_n,
+	input wire rs232_rtsn,
 	input wire [7:0] data,
 	input wire valid,
 	output reg ready);
@@ -32,9 +32,9 @@ module rs232_send #(parameter CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	reg [TIMER_WIDTH-1:0] timer;
 	reg running;
 
-	always @(posedge clock or negedge reset_n)
+	always @(posedge clock or negedge resetn)
 	begin
-		if (!reset_n || !running)
+		if (!resetn || !running)
 		begin
 			timer <= 0;
 			rs232_rxd <= 1'b1;
@@ -66,9 +66,9 @@ module rs232_send #(parameter CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 		end
 	end
 
-	always @(posedge clock or negedge reset_n)
+	always @(posedge clock or negedge resetn)
 	begin
-		if (!reset_n)
+		if (!resetn)
 		begin
 			buffer <= 8'bx;
 			running <= 1'b0;
@@ -80,7 +80,7 @@ module rs232_send #(parameter CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 			begin
 				buffer <= 8'bx;
 				running <= 1'b0;
-				ready <= !rs232_rts_n;
+				ready <= !rs232_rtsn;
 			end
 		end
 		else
@@ -95,7 +95,7 @@ module rs232_send #(parameter CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 			begin
 				buffer <= 8'bx;
 				running <= 1'b0;
-				ready <= !rs232_rts_n;
+				ready <= !rs232_rtsn;
 			end
 		end
 	end
@@ -104,9 +104,9 @@ endmodule
 
 module rs232_send3 #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	input wire clock,
-	input wire reset_n,
+	input wire resetn,
 	output reg rs232_rxd,
-	input wire rs232_rts_n,
+	input wire rs232_rtsn,
 	input wire [7:0] data,
 	input wire valid,
 	output reg ready);
@@ -131,17 +131,17 @@ module rs232_send3 #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	reg [TIMER_WIDTH-1:0] timer;
 	reg running;
 
-	always @(posedge clock or negedge reset_n)
+	always @(posedge clock or negedge resetn)
 	begin
-		if (!reset_n || !running)
+		if (!resetn || !running)
 			timer <= 0;
 		else
 			timer <= timer + 1;
 	end
 
-	always @(posedge clock or negedge reset_n)
+	always @(posedge clock or negedge resetn)
 	begin
-		if (!reset_n)
+		if (!resetn)
 		begin
 			rs232_rxd <= 1'b1;
 			buffer = 8'bx;
@@ -174,7 +174,7 @@ module rs232_send3 #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 			if (timer == FINISH-1)
 			begin
 				running <= 1'b0;
-				ready <= !rs232_rts_n;
+				ready <= !rs232_rtsn;
 			end
 		end
 		else
@@ -191,7 +191,7 @@ module rs232_send3 #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 				rs232_rxd <= 1'b1;
 				buffer <= 8'bx;
 				running <= 1'b0;
-				ready <= !rs232_rts_n;
+				ready <= !rs232_rtsn;
 			end
 		end
 	end
@@ -223,7 +223,7 @@ module rs232_receive_bare #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=11520
 		if (!resetn)
 			txd <= 1'b1;
 		else
-			txd <= txd_temp[2:0] == 3'b011 || txd_temp[2:0] == 3'b101 
+			txd <= txd_temp[2:0] == 3'b011 || txd_temp[2:0] == 3'b101
 				|| txd_temp[2:0] == 3'b110 || txd_temp[2:0] == 3'b111;
 	end
 

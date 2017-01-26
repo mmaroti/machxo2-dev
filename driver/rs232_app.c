@@ -15,7 +15,7 @@ const int BAUDRATE = 12000000;
 int main(void) {
   int ret;
   struct ftdi_context *ftdi;
-  unsigned char buffer[1024];
+  unsigned char buffer[100000];
   unsigned short status;
 
   if ((ftdi = ftdi_new()) == 0) {
@@ -85,7 +85,7 @@ int main(void) {
     goto error;
 
   for (int i = 0; i < sizeof(buffer); i++)
-    buffer[i] = 0x0F;
+    buffer[i] = 0xAA;
 
   printf("Writing data\n");
   if ((ret = ftdi_write_data(ftdi, buffer, sizeof(buffer))) < 0)
