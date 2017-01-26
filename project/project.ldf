@@ -26,17 +26,23 @@
         </Source>
     </Implementation>
     <Implementation title="rs232dbg" dir="rs232dbg" description="rs232dbg" synthesis="lse" default_strategy="Area">
-        <Options def_top="top"/>
+        <Options def_top="fifo_dc"/>
         <Source name="../verilog/reset.v" type="Verilog" type_short="Verilog">
-            <Options/>
+            <Options top_module="resetn_gen"/>
         </Source>
         <Source name="../verilog/rs232.v" type="Verilog" type_short="Verilog">
             <Options top_module="rs232_receive_bare"/>
         </Source>
+        <Source name="../verilog/fifo_dc.v" type="Verilog" type_short="Verilog">
+            <Options top_module="fifo_dc"/>
+        </Source>
         <Source name="../verilog/rs232dbg_app.v" type="Verilog" type_short="Verilog">
-            <Options top_module="top"/>
+            <Options/>
         </Source>
         <Source name="project.lpf" type="Logic Preference" type_short="LPF">
+            <Options/>
+        </Source>
+        <Source name="rs232dbg/rs232dbg.xcf" type="Programming Project File" type_short="Programming">
             <Options/>
         </Source>
     </Implementation>
