@@ -3,7 +3,7 @@ module top(
 	input wire rs232_txd,
 	output wire rs232_rxd,
 	input wire rs232_rtsn,
-	output wire rs232_ctsn,
+	output reg rs232_ctsn,
 	input wire resetn_pio);
 
 wire clock;
@@ -17,6 +17,12 @@ resetn_gen resetn_gen(
 	.clock(clock), 
 	.resetn(resetn), 
 	.resetn_pio(resetn_pio));
+
+always @(negedge resetn)
+begin
+	if (!resetn)
+		rs232_ctsn <= 1'b0;
+end
 
 reg txd_bit_data, txd_bit_valid;
 always @(posedge clock or negedge resetn)
@@ -40,8 +46,8 @@ always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
 	begin
-		txd_byte_data <= 8'b11111111;
-		txd_byte_addr <= 3'b000;
+		txd_byte_data <= 8'h55;
+		txd_byte_addr <= 3'b0;
 	end
 	else if (txd_bit_valid)
 	begin
@@ -54,9 +60,9 @@ end
 wire fifo_full, fifo_empty, fifo_rden, fifo;
 wire [7:0] fifo_q;
 
-fifo_dc fifo(
+fifo_dc fifo_dc(
 	.Data(txd_byte_data),
-	.WrEn(txd_byte_valid),
+	.WrEn(txd_byte_valid && !fifo_full),
 	.RdEn(fifo_rden),
 	.Q(fifo_q),
 	.WrClock(clock),
@@ -68,26 +74,38 @@ fifo_dc fifo(
 	.AlmostEmpty(),
 	.AlmostFull());
 
-always @(posedge clock)
-begin
-	leds[0] <= ~rs232_txd;
-	leds[1] <= ~txd_bit_valid;
-	leds[2] <= ~txd_byte_valid;
-	leds[3] <= ~fifo_empty;
-	leds[4] <= ~fifo_full;
-	leds[5] <= ~fifo_rden;
-	leds[6] <= ~rs232_rtsn;
-	leds[7] <= ~rs232_rxd;
-end
+wire [7:0] data1;
+wire valid1, ready1;
 
-wire ready;
+pull2chan p2c(
+	.clock(clock),
+	.resetn(resetn),
+	.idata(fifo_q),
+	.iempty(fifo_empty),
+	.irden(fifo_rden),
+	.odata(data1),
+	.ovalid(valid1),
+	.oready(ready1));
+
 rs232_send3 #(.CLOCK_FREQ(133000000), .BAUD_RATE(12000000)) rs232_send3(
 	.clock(clock),
 	.resetn(resetn),
 	.rs232_rxd(rs232_rxd),
 	.rs232_rtsn(rs232_rtsn),
-	.data(fifo_q),
-	.valid(~fifo_empty),
-	.ready(fifo_rden));
+	.data(data1),
+	.valid(valid1),
+	.ready(ready1));
+
+always @(posedge clock)
+begin
+	leds[0] <= ~rs232_txd;
+	leds[1] <= ~rs232_ctsn;
+	leds[2] <= ~txd_bit_valid;
+	leds[3] <= ~txd_byte_valid;
+	leds[4] <= ~fifo_empty;
+	leds[5] <= ~fifo_full;
+	leds[6] <= ~rs232_rxd;
+	leds[7] <= ~rs232_rtsn;
+end
 
 endmodule

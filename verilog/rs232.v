@@ -205,26 +205,13 @@ module rs232_receive_bare #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=11520
 	output reg [7:0] data,
 	output reg valid);
 
-	reg [3:0] txd_temp;
-	always @(posedge clock or negedge resetn)
-	begin
-		if (!resetn)
-			txd_temp <= 4'b1111;
-		else
-		begin
-			txd_temp[2:0] <= txd_temp[3:1];
-			txd_temp[3] <= rs232_txd;
-		end
-	end
-
 	reg txd;
 	always @(posedge clock or negedge resetn)
 	begin
 		if (!resetn)
 			txd <= 1'b1;
 		else
-			txd <= txd_temp[2:0] == 3'b011 || txd_temp[2:0] == 3'b101
-				|| txd_temp[2:0] == 3'b110 || txd_temp[2:0] == 3'b111;
+			txd <= rs232_txd;
 	end
 
 	localparam real UNIT = 1.0 * CLOCK_FREQ / BAUD_RATE;

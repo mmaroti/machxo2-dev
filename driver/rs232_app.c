@@ -15,7 +15,7 @@ const int BAUDRATE = 12000000;
 int main(void) {
   int ret;
   struct ftdi_context *ftdi;
-  unsigned char buffer[1024 * 2];
+  unsigned char buffer[1024 * 1];
   unsigned short status;
 
   if ((ftdi = ftdi_new()) == 0) {
@@ -44,9 +44,9 @@ int main(void) {
     goto error;
   printf("Modem status 0x%04x\n", (int)status);
 
-  printf("Resetting device\n");
-  if ((ret = ftdi_usb_reset(ftdi)) < 0)
-    goto error;
+//  printf("Resetting device\n");
+//  if ((ret = ftdi_usb_reset(ftdi)) < 0)
+//    goto error;
 
 //  printf("Setting RTS to 0\n");
 //  if ((ret = ftdi_setrts(ftdi, 0)) < 0)
@@ -76,19 +76,19 @@ int main(void) {
   if ((ret = ftdi_setflowctrl(ftdi, SIO_RTS_CTS_HS)) < 0)
     goto error;
 
-  printf("Purging buffers\n");
-  if ((ret = ftdi_usb_purge_buffers(ftdi)) < 0)
-    goto error;
+  // printf("Purging buffers\n");
+  // if ((ret = ftdi_usb_purge_buffers(ftdi)) < 0)
+  //  goto error;
 
   printf("Setting RTS to 1\n");
   if ((ret = ftdi_setrts(ftdi, 1)) < 0)
     goto error;
 
   for (int i = 0; i < sizeof(buffer); i++)
-    buffer[i] = 0xAA;
+    buffer[i] = 0x10;
 
   printf("Writing data\n");
-  if ((ret = ftdi_write_data(ftdi, buffer, sizeof(buffer))) < 0)
+  if ((ret = ftdi_write_data(ftdi, buffer, 2)) < 0)
     goto error;
   printf("Written %d bytes\n", ret);
 
@@ -102,9 +102,12 @@ int main(void) {
          buffer[2], buffer[3]);
 
   printf("Dumping data:");
-  for (int i = 0; i < sizeof(buffer); i++)
+  for (int i = 0; i < ret; i++) {
+	if (i % 10 == 0)
+		printf("\n%6d: ", i);
 	for(int j = 0; j < 8; j++)
 		printf("%c", (buffer[i] >> j) & 1 == 1 ? '1' : '0');
+  }
   printf("\n");
 
   for (int i = 1; i < sizeof(buffer); i++) {
