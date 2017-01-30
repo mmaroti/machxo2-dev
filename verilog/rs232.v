@@ -111,6 +111,22 @@ module rs232_send3 #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	input wire valid,
 	output reg ready);
 
+	// metastable buffering
+	reg rtsn_pin2, rtsn;
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+		begin
+			rtsn_pin2 <= 1'b1;
+			rtsn <= 1'b1;
+		end
+		else
+		begin
+			rtsn_pin2 <= rs232_rtsn;
+			rtsn <= rtsn_pin2;
+		end
+	end
+
 	localparam integer
 		START = 0,
 		BIT_0 = (CLOCK_FREQ + BAUD_RATE / 2) / BAUD_RATE,
@@ -174,7 +190,7 @@ module rs232_send3 #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 			if (timer == FINISH-1)
 			begin
 				running <= 1'b0;
-				ready <= !rs232_rtsn;
+				ready <= !rtsn;
 			end
 		end
 		else
@@ -191,28 +207,125 @@ module rs232_send3 #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 				rs232_rxd <= 1'b1;
 				buffer <= 8'bx;
 				running <= 1'b0;
-				ready <= !rs232_rtsn;
+				ready <= !rtsn;
 			end
 		end
 	end
 
 endmodule
 
-module rs232_receive_bare #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200) (
+module push_to_rs232 #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	input wire clock,
 	input wire resetn,
-	input wire rs232_txd,
-	output reg [7:0] data,
-	output reg valid);
+	input wire [7:0] data,
+	input wire push,
+	output reg full,
+	output reg rxd_pin,
+	input wire rtsn_pin);
 
-	reg txd;
+	localparam real UNIT = 1.0 * CLOCK_FREQ / BAUD_RATE;
+
+	// rounded to the nearest integer
+	localparam [63:0]
+		START = 1,
+		BIT_0 = UNIT * 1.0 + 1,
+		BIT_1 = UNIT * 2.0 + 1,
+		BIT_2 = UNIT * 3.0 + 1,
+		BIT_3 = UNIT * 4.0 + 1,
+		BIT_4 = UNIT * 5.0 + 1,
+		BIT_5 = UNIT * 6.0 + 1,
+		BIT_6 = UNIT * 7.0 + 1,
+		BIT_7 = UNIT * 8.0 + 1,
+		STOP = UNIT * 9.0 + 1,
+		FINISH = UNIT * 10.0 - 1;
+
+	localparam integer TIMER_WIDTH = $clog2(FINISH + 1);
+
+	reg [TIMER_WIDTH-1:0] timer;
 	always @(posedge clock or negedge resetn)
 	begin
 		if (!resetn)
-			txd <= 1'b1;
+			timer <= 1'b0;
+		else if ((timer == 0 && !push) || timer == FINISH)
+			timer <= 1'b0;
 		else
-			txd <= rs232_txd;
+			timer <= timer + 1'b1;
 	end
+
+	reg [7:0] buffer;
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+		begin
+			rxd_pin <= 1'b1;
+			buffer <= 8'hFF;
+		end
+		else if (timer == 0)
+			buffer <= data;
+		else if (timer == START)
+			rxd_pin <= 1'b0;
+		else if (timer == BIT_0 || timer == BIT_1 || timer == BIT_2 || timer == BIT_3
+			|| timer == BIT_4 || timer == BIT_5 || timer == BIT_6 || timer == BIT_7
+			|| timer == STOP)
+		begin
+			rxd_pin <= buffer[0];
+			buffer[6:0] <= buffer[7:1];
+			buffer[7] <= 1'b1;
+		end
+	end
+
+	// metastable buffering
+	reg rtsn_pin2, rtsn;
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+		begin
+			rtsn_pin2 <= 1'b1;
+			rtsn <= 1'b1;
+		end
+		else
+		begin
+			rtsn_pin2 <= rtsn_pin;
+			rtsn <= rtsn_pin2;
+		end
+	end
+
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+			full = 1'b1;
+		else
+			full = rtsn || (timer != 0 && timer != FINISH);
+	end
+
+endmodule
+
+module rs232_to_push #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200) (
+	input wire clock,
+	input wire resetn,
+	input wire txd_pin,
+	output wire ctsn_pin,
+	output reg [7:0] data,
+	output reg push,
+	input wire full);
+
+	// metastable buffering
+	reg txd_pin2, txd;
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+		begin
+			txd_pin2 <= 1'b1;
+			txd <= 1'b1;
+		end
+		else
+		begin
+			txd_pin2 <= txd_pin;
+			txd <= txd_pin2;
+		end
+	end
+
+	assign ctsn_pin = full;
 
 	localparam real UNIT = 1.0 * CLOCK_FREQ / BAUD_RATE;
 
@@ -245,9 +358,9 @@ module rs232_receive_bare #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=11520
 	always @(posedge clock or negedge resetn)
 	begin
 		if (!resetn)
-			valid <= 1'b0;
+			push <= 1'b0;
 		else
-			valid <= timer == STOP && txd;
+			push <= timer == STOP && txd;
 	end
 
 	always @(posedge clock or negedge resetn)
@@ -261,5 +374,31 @@ module rs232_receive_bare #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=11520
 			data[7] <= txd;
 		end
 	end
+
+endmodule
+
+module buffer #(parameter integer DEPTH = 3) (
+	input wire clock,
+	input wire resetn,
+	input wire [7:0] idata,
+	input wire ipush,
+	output reg iready,
+	output reg [7:0] odata,
+	output reg ovalid,
+	input wire oready);
+	localparam integer COUNTER_WIDTH = $clog2(DEPTH + 1);
+	reg [COUNTER_WIDTH-1:0] counter;
+
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+			iready <= 1'b0;
+		else
+			iready <= oready && counter == 0;
+	end
+
+	reg [7:0] buffer [0:DEPTH-1];
+	
+
 
 endmodule

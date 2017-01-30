@@ -1,9 +1,9 @@
 /*
 Moves data from idata to odata. Data is transferred on the ports
-when both xx_val and xx_rdy are high on the rising edge of the clock.
+when both xvalid and xready are high on the rising edge of the clock.
 */
 
-module chan2chan #(parameter WIDTH = 8) (
+module pipe #(parameter WIDTH = 8) (
 	input wire clock,
 	input wire resetn,
 	input wire [WIDTH-1:0] idata,
