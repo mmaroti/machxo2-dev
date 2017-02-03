@@ -15,7 +15,7 @@ const int BAUDRATE = 12000000;
 int main(void) {
   int ret;
   struct ftdi_context *ftdi;
-  unsigned char buffer[1024 * 4];
+  unsigned char buffer[1024 * 0 + 1];
   unsigned short status;
 
   if ((ftdi = ftdi_new()) == 0) {

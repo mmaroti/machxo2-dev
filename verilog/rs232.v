@@ -308,7 +308,7 @@ module rs232_recv #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	output wire ctsn_pin,
 	output reg [7:0] data,
 	output reg wren,
-	input wire full);
+	input wire afull);
 
 	// metastable buffering
 	reg txd_pin2, txd;
@@ -326,7 +326,7 @@ module rs232_recv #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 		end
 	end
 
-	assign ctsn_pin = full;
+	assign ctsn_pin = afull;
 
 	localparam real UNIT = 1.0 * CLOCK_FREQ / BAUD_RATE;
 
@@ -374,6 +374,65 @@ module rs232_recv #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 			data[6:0] <= data[7:1];
 			data[7] <= txd;
 		end
+	end
+
+endmodule
+
+module buffer #(parameter integer WIDTH = 8, SIZE = 4, AFULL = 2) (
+	input wire clock,
+	input wire resetn,
+	input wire [WIDTH-1:0] idata,
+	input wire iwren,
+	output reg iafull,
+	output reg [WIDTH-1:0] odata,
+	output ovalid,
+	input oready);
+
+	localparam integer SIZE_WIDTH = $clog2(SIZE);
+
+	reg [WIDTH-1:0] buffer[SIZE-1:0];
+	reg [SIZE_WIDTH-1:0] size;
+	
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+			iafull <= 1'b1;
+		else
+			iafull <= (size >= AFULL);
+	end
+
+	integer i;
+
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+		begin
+			for (i = 0; i < SIZE; i = i + 1)
+				buffer[i] <= {WIDTH{1'bx}};
+		end
+		else if (iwren)
+		begin
+			buffer[0] <= idata;
+			for (i = 1; i < SIZE; i = i + 1)
+				buffer[i] <= buffer[i - 1]; 
+		end
+	end
+
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+			size <= 1'b0;
+		else if (iwren && !(oready && ovalid))
+			size <= size + 1'b1;
+		else if (!iwren && oready && ovalid)
+			size <= size - 1'b1;
+	end
+
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+			odata <= {WIDTH{1'bx}};
+		else if (oready 
 	end
 
 endmodule

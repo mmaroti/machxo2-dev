@@ -16,15 +16,15 @@ wire resetn;
 resetn_gen resetn_get(.clock(clock), .resetn(resetn), .resetn_pin(resetn_pin));
 
 wire [7:0] data;
-wire push;
-rs232_to_push #(.CLOCK_FREQ(133000000), .BAUD_RATE(12000000)) rs232_rx(
+wire wren;
+rs232_recv #(.CLOCK_FREQ(133000000), .BAUD_RATE(12000000)) rs232_recv(
 	.clock(clock), 
 	.resetn(resetn), 
 	.txd_pin(rs232_txd_pin), 
 	.ctsn_pin(rs232_ctsn_pin),
 	.data(data),
-	.push(push),
-	.full(1'b0));
+	.wren(wren),
+	.afull(1'b0));
 
 always @(posedge clock or negedge resetn)
 begin
@@ -32,7 +32,7 @@ begin
 		leds <= 8'b01010101;
 	else
 	begin
-		if (push)
+		if (wren)
 			leds <= ~data;
 	end
 end
