@@ -385,14 +385,25 @@ module buffer #(parameter integer WIDTH = 8, SIZE = 4, AFULL = 2) (
 	input wire iwren,
 	output reg iafull,
 	output reg [WIDTH-1:0] odata,
-	output ovalid,
-	input oready);
+	output reg ovalid,
+	input wire oready);
 
-	localparam integer SIZE_WIDTH = $clog2(SIZE);
+	localparam integer SIZE_WIDTH = $clog2(SIZE + 1);
+	integer i;
 
-	reg [WIDTH-1:0] buffer[SIZE-1:0];
-	reg [SIZE_WIDTH-1:0] size;
-	
+	wire itransfer = iwren;
+	wire otransfer = ovalid && oready;
+	reg [SIZE_WIDTH-1:0] size;
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+			size <= 1'b0;
+		else if (itransfer && !otransfer)
+			size <= size + 1'b1;
+		else if (!itransfer && otransfer)
+			size <= size - 1'b1;
+	end
+
 	always @(posedge clock or negedge resetn)
 	begin
 		if (!resetn)
@@ -401,8 +412,7 @@ module buffer #(parameter integer WIDTH = 8, SIZE = 4, AFULL = 2) (
 			iafull <= (size >= AFULL);
 	end
 
-	integer i;
-
+	reg [WIDTH-1:0] buffer[0:SIZE-1];
 	always @(posedge clock or negedge resetn)
 	begin
 		if (!resetn)
@@ -410,7 +420,7 @@ module buffer #(parameter integer WIDTH = 8, SIZE = 4, AFULL = 2) (
 			for (i = 0; i < SIZE; i = i + 1)
 				buffer[i] <= {WIDTH{1'bx}};
 		end
-		else if (iwren)
+		else if (itransfer)
 		begin
 			buffer[0] <= idata;
 			for (i = 1; i < SIZE; i = i + 1)
@@ -418,21 +428,20 @@ module buffer #(parameter integer WIDTH = 8, SIZE = 4, AFULL = 2) (
 		end
 	end
 
-	always @(posedge clock or negedge resetn)
+	reg [WIDTH-1:0] buffer2[0:SIZE];
+	always @(*)
 	begin
-		if (!resetn)
-			size <= 1'b0;
-		else if (iwren && !(oready && ovalid))
-			size <= size + 1'b1;
-		else if (!iwren && oready && ovalid)
-			size <= size - 1'b1;
+		buffer2[0] = idata;
+		for (i = 1; i <= SIZE; i = i + 1)
+			buffer2[i] = buffer[i - 1];
 	end
 
 	always @(posedge clock or negedge resetn)
 	begin
 		if (!resetn)
 			odata <= {WIDTH{1'bx}};
-		else if (oready 
+		else if (otransfer)
+			odata <= buffer2[size];
 	end
 
 endmodule

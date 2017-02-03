@@ -70,7 +70,7 @@
     <Implementation title="rs232rx" dir="rs232rx" description="rs232rx" synthesis="lse" default_strategy="Area">
         <Options def_top="top"/>
         <Source name="../verilog/rs232.v" type="Verilog" type_short="Verilog">
-            <Options top_module="rs232_send4"/>
+            <Options top_module="buffer"/>
         </Source>
         <Source name="../verilog/reset.v" type="Verilog" type_short="Verilog">
             <Options/>
