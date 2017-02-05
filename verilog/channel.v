@@ -73,6 +73,25 @@ module pull2chan #(parameter WIDTH = 8) (
 
 endmodule
 
+module counter #(parameter integer WIDTH = 8) (
+	input wire clock,
+	input wire resetn,
+	output reg [WIDTH-1:0] odata,
+	output wire ovalid,
+	input wire oready);
+
+assign ovalid = 1'b1;
+
+always @(posedge clock or negedge resetn)
+begin
+	if (!resetn)
+		odata <= 1'b0;
+	else if (oready)
+		odata <= odata + 1'b1;
+end
+
+endmodule
+
 module buffer #(parameter integer WIDTH = 8, SIZE = 3, SIZE_WIDTH = $clog2(SIZE + 1)) (
 	input wire clock,
 	input wire resetn,
@@ -103,8 +122,8 @@ module buffer #(parameter integer WIDTH = 8, SIZE = 3, SIZE_WIDTH = $clog2(SIZE 
 		else
 		begin
 			size <= size3;
-			iready <= size3 != SIZE;
-			ovalid <= size3 != 0;
+			iready <= size3 < SIZE;
+			ovalid <= size3 > 0;
 		end
 	end
 
@@ -137,7 +156,7 @@ module buffer #(parameter integer WIDTH = 8, SIZE = 3, SIZE_WIDTH = $clog2(SIZE 
 	begin
 		if (!resetn)
 			odata <= {WIDTH{1'bx}};
-		else if (otransfer)
+		else
 			odata <= buffer2[size2];
 	end
 

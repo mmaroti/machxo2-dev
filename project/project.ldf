@@ -29,9 +29,21 @@
         </Source>
     </Implementation>
     <Implementation title="pipetest" dir="pipetest" description="pipetest" synthesis="lse" default_strategy="Area">
-        <Options def_top="buffer"/>
+        <Options def_top="top"/>
         <Source name="../verilog/channel.v" type="Verilog" type_short="Verilog">
-            <Options top_module="buffer"/>
+            <Options top_module="pull2chan"/>
+        </Source>
+        <Source name="../verilog/channel_test.v" type="Verilog" type_short="Verilog" syn_sim="SimOnly">
+            <Options/>
+        </Source>
+        <Source name="../verilog/channel_test2.v" type="Verilog" type_short="Verilog" syn_sim="SimOnly">
+            <Options/>
+        </Source>
+        <Source name="../verilog/channel_app.v" type="Verilog" type_short="Verilog">
+            <Options top_module="top"/>
+        </Source>
+        <Source name="../verilog/reset.v" type="Verilog" type_short="Verilog">
+            <Options/>
         </Source>
         <Source name="pipetest.lpf" type="Logic Preference" type_short="LPF">
             <Options/>
