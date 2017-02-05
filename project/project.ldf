@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<BaliProject version="3.2" title="project" device="LCMXO2-7000HE-4TG144C" default_implementation="rs232rx">
+<BaliProject version="3.2" title="project" device="LCMXO2-7000HE-4TG144C" default_implementation="pipetest">
     <Options/>
     <Implementation title="blink" dir="blink" description="blink" synthesis="lse" default_strategy="Area">
         <Options def_top="top"/>
@@ -24,7 +24,16 @@
         <Source name="../verilog/tb_fifo_dc_8x8_tmpl.v" type="Verilog" type_short="Verilog">
             <Options top_module="tb"/>
         </Source>
-        <Source name="project.lpf" type="Logic Preference" type_short="LPF">
+        <Source name="fifotest.lpf" type="Logic Preference" type_short="LPF">
+            <Options/>
+        </Source>
+    </Implementation>
+    <Implementation title="pipetest" dir="pipetest" description="pipetest" synthesis="lse" default_strategy="Area">
+        <Options def_top="buffer"/>
+        <Source name="../verilog/channel.v" type="Verilog" type_short="Verilog">
+            <Options top_module="buffer"/>
+        </Source>
+        <Source name="pipetest.lpf" type="Logic Preference" type_short="LPF">
             <Options/>
         </Source>
     </Implementation>
