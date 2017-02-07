@@ -1,11 +1,12 @@
 module top(
+	input wire clock,
 	input wire resetn_pin,
 	input wire enable1,
 	input wire enable2,
 	output reg [7:0] leds);
 
-wire clock;
-OSCH #(.NOM_FREQ("133.00")) rc_osc(.STDBY(1'b0), .OSC(clock), .SEDSTDBY());
+// wire clock;
+// OSCH #(.NOM_FREQ("133.00")) rc_osc(.STDBY(1'b0), .OSC(clock), .SEDSTDBY());
 
 resetn_gen resetn_get(.clock(clock), .resetn(resetn), .resetn_pin(resetn_pin));
 
@@ -44,6 +45,7 @@ pipe pipe(
 	.ovalid(valid2),
 	.oready(enable2));
 */
+
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)

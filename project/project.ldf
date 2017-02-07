@@ -28,7 +28,7 @@
             <Options/>
         </Source>
     </Implementation>
-    <Implementation title="pipetest" dir="pipetest" description="pipetest" synthesis="lse" default_strategy="Area">
+    <Implementation title="pipetest" dir="pipetest" description="pipetest" synthesis="lse" default_strategy="Timing">
         <Options def_top="top"/>
         <Source name="../verilog/channel.v" type="Verilog" type_short="Verilog">
             <Options top_module="pull2chan"/>
