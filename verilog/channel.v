@@ -36,43 +36,6 @@ module pipe #(parameter WIDTH = 8) (
 
 endmodule
 
-module pull2chan #(parameter WIDTH = 8) (
-	input wire clock,
-	input wire resetn,
-	input wire [WIDTH-1:0] idata,
-	input wire iempty,
-	output reg irden,
-	output reg [WIDTH-1:0] odata,
-	output reg ovalid,
-	input wire oready);
-
-	reg [WIDTH-1:0] buffer;
-	reg bvalid;
-
-	always @(posedge clock or negedge resetn)
-	begin
-		if (!resetn)
-		begin
-			irden <= 1'b0;
-			odata <= {WIDTH{1'bx}};
-			ovalid <= 1'b0;
-			buffer <= {WIDTH{1'bx}};
-			bvalid <= 1'b0;
-		end
-		else
-		begin
-			ovalid <= (ovalid && !oready) || bvalid || irden;
-			odata <= (ovalid && !oready) ? odata : (bvalid ? buffer : idata);
-
-			bvalid <= ovalid && !oready && (irden || bvalid);
-			buffer <= (ovalid && !oready && irden) ? idata : buffer;
-
-			irden <= !iempty && !(ovalid && !oready && (irden || bvalid));
-		end
-	end
-
-endmodule
-
 module counter #(parameter integer WIDTH = 8) (
 	input wire clock,
 	input wire resetn,
@@ -80,19 +43,19 @@ module counter #(parameter integer WIDTH = 8) (
 	output wire ovalid,
 	input wire oready);
 
-assign ovalid = 1'b1;
+	assign ovalid = 1'b1;
 
-always @(posedge clock or negedge resetn)
-begin
-	if (!resetn)
-		odata <= 1'b0;
-	else if (oready)
-		odata <= odata + 1'b1;
-end
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+			odata <= 1'b0;
+		else if (oready)
+			odata <= odata + 1'b1;
+	end
 
 endmodule
 
-module buffer #(parameter integer WIDTH = 8, SIZE = 3, SIZE_WIDTH = $clog2(SIZE + 1)) (
+module fifo #(parameter integer WIDTH = 8, SIZE = 3, SIZE_WIDTH = $clog2(SIZE + 1)) (
 	input wire clock,
 	input wire resetn,
 	output reg [SIZE_WIDTH-1:0] size,
@@ -158,6 +121,50 @@ module buffer #(parameter integer WIDTH = 8, SIZE = 3, SIZE_WIDTH = $clog2(SIZE 
 			odata <= {WIDTH{1'bx}};
 		else
 			odata <= buffer2[size2];
+	end
+
+endmodule
+
+module push2pipe #(parameter integer WIDTH = 8) (
+	input wire clock,
+	input wire resetn,
+	output reg overflow,
+	input wire iwren,
+	output wire ovalid,
+	input wire oready);
+
+	assign ovalid = iwren;
+
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+			overflow <= 1'b0;
+		else if (iwren && !oready)
+			overflow <= 1'b1;
+	end
+
+endmodule
+
+/*
+In a "pull" handshake DATA is transferred one clock cycle after when RDEN becomes high
+and EMPTY becomes low.
+*/
+
+module pull2pipe #(parameter integer WIDTH = 8) (
+	input wire clock,
+	input wire resetn,
+	input wire [WIDTH-1:0] idata,
+	input wire iempty,
+	output reg irden,
+	output reg [WIDTH-1:0] odata,
+	output reg ovalid,
+	input wire oready);
+
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+		begin
+		end
 	end
 
 endmodule

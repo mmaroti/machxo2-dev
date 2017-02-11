@@ -105,8 +105,8 @@ endmodule
 module rs232_send3 #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	input wire clock,
 	input wire resetn,
-	output reg rs232_rxd,
-	input wire rs232_rtsn,
+	output reg rxd_pin,
+	input wire rtsn_pin,
 	input wire [7:0] data,
 	input wire valid,
 	output reg ready);
@@ -122,7 +122,7 @@ module rs232_send3 #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 		end
 		else
 		begin
-			rtsn_pin2 <= rs232_rtsn;
+			rtsn_pin2 <= rtsn_pin;
 			rtsn <= rtsn_pin2;
 		end
 	end
@@ -159,7 +159,7 @@ module rs232_send3 #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	begin
 		if (!resetn)
 		begin
-			rs232_rxd <= 1'b1;
+			rxd_pin <= 1'b1;
 			buffer = 8'bx;
 			running <= 1'b0;
 			ready <= 1'b0;
@@ -176,7 +176,7 @@ module rs232_send3 #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 				|| (timer == BIT_7)
 				|| (timer == STOP))
 			begin
-				rs232_rxd <= buffer[0];
+				rxd_pin <= buffer[0];
 				buffer[0] <= buffer[1];
 				buffer[1] <= buffer[2];
 				buffer[2] <= buffer[3];
@@ -197,14 +197,14 @@ module rs232_send3 #(parameter integer CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 		begin
 			if (ready && valid)
 			begin
-				rs232_rxd <= 1'b0;
+				rxd_pin <= 1'b0;
 				buffer <= data;
 				running <= 1'b1;
 				ready <= 1'b0;
 			end
 			else
 			begin
-				rs232_rxd <= 1'b1;
+				rxd_pin <= 1'b1;
 				buffer <= 8'bx;
 				running <= 1'b0;
 				ready <= !rtsn;
@@ -374,6 +374,93 @@ module rs232_recv #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 			data[6:0] <= data[7:1];
 			data[7] <= txd;
 		end
+	end
+
+endmodule
+
+module rs232_recv2 #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200) (
+	input wire clock,
+	input wire resetn,
+	input wire txd_pin,
+	output wire ctsn_pin,
+	output reg [7:0] odata,
+	output reg ovalid,
+	input wire oready,
+	output reg overflow,
+	input wire almostfull);
+
+	// metastable buffering
+	reg txd_pin2, txd;
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+		begin
+			txd_pin2 <= 1'b1;
+			txd <= 1'b1;
+		end
+		else
+		begin
+			txd_pin2 <= txd_pin;
+			txd <= txd_pin2;
+		end
+	end
+
+	assign ctsn_pin = almostfull;
+
+	localparam real UNIT = 1.0 * CLOCK_FREQ / BAUD_RATE;
+
+	// rounded to the nearest integer
+	localparam [63:0]
+		START = UNIT * 0.5 - 0.5,
+		BIT_0 = UNIT * 1.5 - 0.5,
+		BIT_1 = UNIT * 2.5 - 0.5,
+		BIT_2 = UNIT * 3.5 - 0.5,
+		BIT_3 = UNIT * 4.5 - 0.5,
+		BIT_4 = UNIT * 5.5 - 0.5,
+		BIT_5 = UNIT * 6.5 - 0.5,
+		BIT_6 = UNIT * 7.5 - 0.5,
+		BIT_7 = UNIT * 8.5 - 0.5,
+		STOP =  UNIT * 9.5 - 0.5;
+
+	localparam integer TIMER_WIDTH = $clog2(STOP + 1);
+
+	reg [TIMER_WIDTH-1:0] timer;
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+			timer <= 1'b0;
+		else if (((timer <= START) && txd) || timer == STOP)
+			timer <= 1'b0;
+		else
+			timer <= timer + 1'b1;
+	end
+
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+			odata <= 8'bx;
+		else if (timer == BIT_0 || timer == BIT_1 || timer == BIT_2 || timer == BIT_3
+			|| timer == BIT_4 || timer == BIT_5 || timer == BIT_6 || timer == BIT_7)
+		begin
+			odata[6:0] <= odata[7:1];
+			odata[7] <= txd;
+		end
+	end
+
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+			ovalid <= 1'b0;
+		else
+			ovalid <= timer == STOP && txd;
+	end
+
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+			overflow <= 1'b0;
+		else if (ovalid && !oready)
+			overflow <= 1'b1;
 	end
 
 endmodule

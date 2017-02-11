@@ -15,7 +15,7 @@ const int BAUDRATE = 12000000;
 int main(void) {
   int ret;
   struct ftdi_context *ftdi;
-  unsigned char buffer[1024 * 0 + 1];
+  unsigned char buffer[1024 * 7 + 1];
   unsigned short status;
 
   if ((ftdi = ftdi_new()) == 0) {
@@ -85,10 +85,10 @@ int main(void) {
     goto error;
 
   for (int i = 0; i < sizeof(buffer); i++)
-    buffer[i] = 0x0F;
+    buffer[i] = i;
 
   printf("Writing data\n");
-  if ((ret = ftdi_write_data(ftdi, buffer, sizeof(buffer))) < 0)
+  if ((ret = ftdi_write_data(ftdi, buffer, sizeof(buffer)-1)) < 0)
     goto error;
   printf("Written %d bytes\n", ret);
 
@@ -101,14 +101,25 @@ int main(void) {
   printf("Read %d bytes (0x%02x%02x%02x%02x)\n", ret, buffer[0], buffer[1],
          buffer[2], buffer[3]);
 
-  printf("Dumping data:");
-  for (int i = 0; i < ret; i++) {
+  if (0) {
+    printf("Dumping data:");
+    for (int i = 0; i < ret; i++) {
 	if (i % 10 == 0)
 		printf("\n%6d: ", i);
 	for(int j = 0; j < 8; j++)
 		printf("%c", (buffer[i] >> j) & 1 == 1 ? '1' : '0');
+    }
+    printf("\n");
   }
-  printf("\n");
+  else {
+    printf("Dumping data:");
+    for (int i = 0; i < ret; i++) {
+	if (i % 10 == 0)
+		printf("\n%6d:", i);
+	printf(" 0x%02x", buffer[i]);
+    }
+    printf("\n");
+  }
 
   for (int i = 1; i < sizeof(buffer); i++) {
     if ((unsigned char)(buffer[i] - buffer[i - 1]) != 1) {

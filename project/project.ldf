@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<BaliProject version="3.2" title="project" device="LCMXO2-7000HE-4TG144C" default_implementation="pipetest">
+<BaliProject version="3.2" title="project" device="LCMXO2-7000HE-4TG144C" default_implementation="rs232rx">
     <Options/>
     <Implementation title="blink" dir="blink" description="blink" synthesis="lse" default_strategy="Area">
         <Options def_top="top"/>
@@ -31,7 +31,7 @@
     <Implementation title="pipetest" dir="pipetest" description="pipetest" synthesis="lse" default_strategy="Timing">
         <Options def_top="top"/>
         <Source name="../verilog/channel.v" type="Verilog" type_short="Verilog">
-            <Options top_module="pull2chan"/>
+            <Options top_module="pull2pipe"/>
         </Source>
         <Source name="../verilog/channel_test.v" type="Verilog" type_short="Verilog" syn_sim="SimOnly">
             <Options/>
@@ -70,13 +70,13 @@
             <Options/>
         </Source>
         <Source name="../verilog/rs232.v" type="Verilog" type_short="Verilog">
-            <Options top_module="rs232_receive_bare"/>
+            <Options top_module="rs232_recv2"/>
         </Source>
         <Source name="../verilog/fifo_dc.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
         <Source name="../verilog/channel.v" type="Verilog" type_short="Verilog">
-            <Options top_module="chan2chan"/>
+            <Options top_module="pull2pipe"/>
         </Source>
         <Source name="../verilog/rs232dbg_app.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>
@@ -91,10 +91,13 @@
     <Implementation title="rs232rx" dir="rs232rx" description="rs232rx" synthesis="lse" default_strategy="Area">
         <Options def_top="top"/>
         <Source name="../verilog/rs232.v" type="Verilog" type_short="Verilog">
-            <Options top_module="buffer"/>
+            <Options top_module="rs232_recv"/>
         </Source>
         <Source name="../verilog/reset.v" type="Verilog" type_short="Verilog">
             <Options/>
+        </Source>
+        <Source name="../verilog/channel.v" type="Verilog" type_short="Verilog">
+            <Options top_module="pull2pipe"/>
         </Source>
         <Source name="../verilog/rs232rx_app.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>

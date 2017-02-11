@@ -11,7 +11,7 @@ LOCATE COMP "leds[6]" SITE "106" ;
 LOCATE COMP "leds[7]" SITE "107" ;
 LOCATE COMP "rs232_txd_pin" SITE "73" ;
 LOCATE COMP "rs232_rxd_pin" SITE "74" ;
-// LOCATE COMP "rs232_rtsn_pin" SITE "75" ;
+LOCATE COMP "rs232_rtsn_pin" SITE "75" ;
 LOCATE COMP "rs232_ctsn_pin" SITE "76" ;
 LOCATE COMP "resetn_pin" SITE "84" ;
 IOBUF PORT "leds[0]" DRIVE=4 IO_TYPE=LVCMOS33 PULLMODE=UP ;

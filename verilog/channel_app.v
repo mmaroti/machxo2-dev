@@ -14,16 +14,16 @@ wire [7:0] data1;
 wire valid1, ready1;
 
 counter counter(
-	.clock(clock), 
-	.resetn(resetn), 
-	.odata(data1), 
-	.ovalid(valid1), 
+	.clock(clock),
+	.resetn(resetn),
+	.odata(data1),
+	.ovalid(valid1),
 	.oready(ready1 && enable1));
 
 wire [7:0] data2;
 wire valid2;
 
-buffer #(.SIZE(2)) buffer(
+fifo #(.SIZE(16)) fifo(
 	.clock(clock), 
 	.resetn(resetn),
 	.size(),
