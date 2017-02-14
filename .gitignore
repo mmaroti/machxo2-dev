@@ -1,6 +1,10 @@
-.recovery
-.setting.ini
-**/impl*
+fpga/**/.recovery
+fpga/**/.setting.ini
+fpga/**/.run_manager.ini
+fpga/**/*.xml
+fpga/**/*.html
+fpga/**/*.dir
+fpga/**/impl*
 project/*
 !project/**/*.ldf
 !project/**/*.lpf
