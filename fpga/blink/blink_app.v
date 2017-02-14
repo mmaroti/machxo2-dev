@@ -1,13 +1,13 @@
 module top(output reg [7:0] leds);
 
-wire clk;
-OSCH #(.NOM_FREQ("133.00")) rc_osc(.STDBY(1'b0), .OSC(clk), .SEDSTDBY());
+wire clock;
+OSCH #(.NOM_FREQ("133.00")) osch(.STDBY(1'b0), .OSC(clock), .SEDSTDBY());
 
 reg [31:0] counter;
 
 initial counter <= 32'b0;
 
-always @(posedge clk)
+always @(posedge clock)
 begin
 	counter <= counter + 1'b1;
 	leds <= ~counter[31:24];
