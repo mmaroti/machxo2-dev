@@ -1,3 +1,5 @@
+// Copyright (C) 2017, Miklos Maroti
+
 `timescale 1ns/1ps
 module sim();
 

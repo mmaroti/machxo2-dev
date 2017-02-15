@@ -1,3 +1,5 @@
+// Copyright (C) 2017, Miklos Maroti
+
 module top(output reg [7:0] leds);
 
 wire clock;
