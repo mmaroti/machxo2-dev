@@ -1,9 +1,11 @@
 # Adding a reset button
 
 I have added a reset button to the breakout board (connecting pin 84 to GND when the button is pressed).
-The [reset.v](reset.v) module debounces the `resetn_pin` input signal and holds the
-`resetn` wire low for several clock cycles to ensure good reset. The `resetn_pin` is active low,
-so the internal pull up resistor is enabled in the configuration file.
+The [reset.v](reset.v) module [debounces](https://en.wikipedia.org/wiki/Switch#Contact_bounce) 
+the `resetn_pin` input signal and holds the `resetn` wire low for several clock cycles to ensure good reset. 
+The `resetn_pin` is active low, so the internal pull up resistor is enabled in the configuration file.
+To avoid [metastability](https://en.wikipedia.org/wiki/Metastability_in_electronics) problems 
+we use an extra register indirection on the pins. 
 
 The [reset_app.v](reset_app.v) application sets the LEDs to the `8'b10101010` pattern 
 when the reset button is pressed, and otherwise it works like the blink application.
@@ -23,6 +25,6 @@ begin
         // do regular register updates
 end
 ```
-The Lattice Diamond tool chain will recognize this pattern and implement it with efficient 
-asynchronous reset logic on the flip-flops. The `reset_gen` module will simply drive the reset network
-(using the GSR module which will be instantiated automatically).
+The Lattice Diamond toolchain will recognize this pattern and implement it with efficient 
+asynchronous reset logic on the flip-flops, and use the `resetn` signal to drive the global reset network 
+(that is, the GSR module will be instantiated automatically and connected to the `reset_gen` module).

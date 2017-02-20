@@ -9,7 +9,7 @@ The [blink_app.v](blink_app.v) application just increments a 32-bit counter and 
 highest 8-bits on the LEDs. The LED pins are active low, so we invert the values. The FPGA 
 is clocked from its internal RC oscillator running at 133 MHz. 
 Using the [blink_sim.v](blink_sim.v) testbench we can simulate 
-the timing of the application,
-![simulation](simulation.png) 
-and verify that the counter wires and LED pins are properly updated, and check that one
+the timing of the application, and verify that the counter wires and LED pins are properly updated, and check that one
 clock cycle is about 1 sec / 133 MHz = 7518 ps.
+
+![Simulation screen capture](simulation.png)

@@ -5,8 +5,7 @@ module resetn_gen #(parameter WIDTH = 2) (
 	input wire resetn_pin,
 	output reg resetn);
 
-reg resetn_pin2;
-initial resetn_pin2 <= 1'b1;
+reg resetn_pin2 = 1'b1;
 
 // to avoid metastability
 always @(posedge clock)
