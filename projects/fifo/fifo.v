@@ -1,8 +1,12 @@
-/*
-Moves data from idata to odata. Data is transferred on the ports
-when both xvalid and xready are high on the rising edge of the clock.
-*/
+/**
+ * Copyright (C) 2017, Miklos Maroti
+ * This file is released under the 3-clause BSD licence.
+ */
 
+/**
+ * Moves data from idata to odata. Data is transferred on the ports
+ * when both xvalid and xready are high on the rising edge of the clock.
+ */
 module pipe #(parameter WIDTH = 8) (
 	input wire clock,
 	input wire resetn,

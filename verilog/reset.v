@@ -1,4 +1,7 @@
-// Copyright (C) 2017, Miklos Maroti
+/**
+ * Copyright (C) 2017, Miklos Maroti
+ * This file is released under the 3-clause BSD licence.
+ */
 
 module resetn_gen #(parameter WIDTH = 2) (
 	input wire clock,
@@ -7,7 +10,7 @@ module resetn_gen #(parameter WIDTH = 2) (
 
 reg resetn_pin2 = 1'b1;
 
-// to avoid metastability
+// use extra register to avoid metastability
 always @(posedge clock)
 begin
 	resetn_pin2 <= resetn_pin;
