@@ -10,3 +10,10 @@ project/*
 !project/**/*.lpf
 !project/**/*.sty
 !project/**/*.v
+projects/*/*
+!projects/*/*.md
+!projects/*/*.png
+!projects/*/*.ldf
+!projects/*/*.lpf
+!projects/*/*.sty
+!projects/*/*.v
