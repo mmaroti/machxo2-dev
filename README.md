@@ -25,6 +25,8 @@ from lattice, and I have copied that to the `/opt/diamond/3.10_x64/license/` dir
 * Use the provided `sudo ./read` program to verify that you can read the EEPROM. After plugging in
 your device you need to unload the default drivers by `sudo rmmod ftdi_sio` and `sudo rmmod usbserial`.
 
+## Install the libftdi1-dev package
+
 ## Useful links
 * http://playground.arduino.cc/Linux/Udev
 * https://github.com/wendlers/lattice-logic-sniffer
