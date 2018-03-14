@@ -1,10 +1,10 @@
 # machxo2-dev
 
 This repository contains FPGA and driver examples for the [MachXO2 Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/MachXO2BreakoutBoard), 
-but the code should work on any FPGA. The reusable verilog modules are under the `src`
-directory. The following example projects are provided:
+but the code should work on any FPGA. The reusable verilog modules are under the 
+[verilog](verilog) directory. The following example projects are provided:
 * [Blink](projects/blink) application
-* [Reset](projects/reset) application with debouncing [reset.v](src/reset.v) module
+* [Reset](projects/reset) application with debouncing [reset.v](verilog/reset.v) module
 
 # Linux setup notes
 
