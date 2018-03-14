@@ -12,8 +12,7 @@ with the following differences:
 * I used `sudo apt-get install python-libusb1` instead of `sudo pip install libusb1`
 * I have moved the `diamond` directory to `/opt` instead of `/usr/local` with the command
 `sudo cp -Rva --no-preserve=ownership ./usr/local/diamond /opt/`
-* You can run the diamond with `/opt/diamond/3.10_x64/bin/lin64/diamond` or add that
-directory to your path in your `.bashrc`
+* I have added the line `PATH="$PATH="$PATH:/opt/diamond/3.10_x64/bin/lin64/"` to the end of my `.profile`
 * When you first run diamond it will ask for your license file. You can get a free license
 from lattice, and I have copied that to the `/opt/diamond/3.10_x64/license/` directory.
 
