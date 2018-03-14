@@ -3,11 +3,11 @@
     <Options/>
     <Implementation title="impl" dir="impl" description="impl" synthesis="lse" default_strategy="Area">
         <Options def_top="top"/>
-        <Source name="reset.v" type="Verilog" type_short="Verilog">
-            <Options/>
-        </Source>
         <Source name="reset_app.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>
+        </Source>
+        <Source name="../../src/reset.v" type="Verilog" type_short="Verilog">
+            <Options/>
         </Source>
         <Source name="reset.lpf" type="Logic Preference" type_short="LPF">
             <Options/>
