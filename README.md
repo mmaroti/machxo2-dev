@@ -19,6 +19,10 @@ with the following differences:
 * I have added the line `PATH="$PATH="$PATH:/opt/diamond/3.10_x64/bin/lin64/"` to the end of my `.profile`
 * When you first run diamond it will ask for your license file. You can get a free license
 from lattice, and I have copied that to the `/opt/diamond/3.10_x64/license/` directory.
+* You have to grant read-write access to the FTDI USB device and prevent the kernel from
+loading its default ftdi_sio driver. Copy the [49-lattice.rules](49-lattice.rules) udev script 
+with `sudo cp 49-lattice.rules /etc/udev/rules.d` and reload the rules with
+`sudo udevadm control --reload-rules && sudo udevadm trigger`.
 
 ## Installing the FTDI N2xx drivers (needed to read/write EEPROM and to use advanced modes)
 * Download the latest drivers from http://www.ftdichip.com/Drivers/D2XX.htm

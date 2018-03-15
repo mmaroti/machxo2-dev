@@ -10,3 +10,5 @@ LOCATE COMP "leds[5]" SITE "105" ;
 LOCATE COMP "leds[6]" SITE "106" ;
 LOCATE COMP "leds[7]" SITE "107" ;
 LOCATE COMP "resetn_pin" SITE "84" ;
+FREQUENCY NET "clock" 133.000000 MHz ;
+USE PRIMARY NET "clock" ;
