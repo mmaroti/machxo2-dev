@@ -1,9 +1,14 @@
 /**
  * Copyright (C) 2017, Miklos Maroti
- * This file is released under the 3-clause BSD licence.
+ * This is free software released under the 3-clause BSD licence.
  */
 
-module resetn_gen #(parameter WIDTH = 2) (
+/**
+ * Debounces an input pin and produces a stable signal by ensuring that
+ * the new state is held for a specified time. The DELAY parameter is
+ * the log2 of the number of clock ticks before a change is registered.
+ */
+module button #(parameter DELAY = 2) (
 	input wire clock,
 	input wire resetn_pin,
 	output reg resetn);
@@ -16,7 +21,7 @@ begin
 	resetn_pin2 <= resetn_pin;
 end
 
-reg [WIDTH-1:0] counter = 0;
+reg [DELAY-1:0] counter = 0;
 
 always @(posedge clock)
 begin

@@ -6,7 +6,7 @@
         <Source name="reset_app.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>
         </Source>
-        <Source name="../../verilog/reset.v" type="Verilog" type_short="Verilog">
+        <Source name="../../verilog/button.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
         <Source name="impl/impl.xcf" type="Programming Project File" type_short="Programming">

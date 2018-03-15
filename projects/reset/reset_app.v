@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2017, Miklos Maroti
- * This file is released under the 3-clause BSD licence.
+ * This is free software released under the 3-clause BSD licence.
  */
 
 module top(
@@ -10,9 +10,10 @@ module top(
 wire clock;
 OSCH #(.NOM_FREQ("133.00")) osch(.STDBY(1'b0), .OSC(clock), .SEDSTDBY());
 
-// make the width 27 for testing purposes (requires around 1 sec long press)
+// make the delay 27 for testing purposes (requires around 1 sec long press)
 wire resetn;
-resetn_gen #(.WIDTH(27)) resetn_gen(.clock(clock), .resetn(resetn), .resetn_pin(resetn_pin));
+button #(.DELAY(27)) 
+	resetn_gen(.clock(clock), .resetn(resetn), .resetn_pin(resetn_pin));
 
 reg [31:0] counter;
 always @(posedge clock or negedge resetn)

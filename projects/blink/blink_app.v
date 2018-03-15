@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2017, Miklos Maroti
- * This file is released under the 3-clause BSD licence.
+ * This is free software released under the 3-clause BSD licence.
  */
 
 module top(output reg [7:0] leds);
