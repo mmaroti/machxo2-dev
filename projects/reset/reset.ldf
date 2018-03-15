@@ -6,7 +6,10 @@
         <Source name="reset_app.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>
         </Source>
-        <Source name="../../src/reset.v" type="Verilog" type_short="Verilog">
+        <Source name="../../verilog/reset.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl/impl.xcf" type="Programming Project File" type_short="Programming">
             <Options/>
         </Source>
         <Source name="reset.lpf" type="Logic Preference" type_short="LPF">
