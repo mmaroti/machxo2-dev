@@ -9,9 +9,6 @@
         <Source name="../../verilog/button.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
-        <Source name="impl/impl.xcf" type="Programming Project File" type_short="Programming">
-            <Options/>
-        </Source>
         <Source name="reset.lpf" type="Logic Preference" type_short="LPF">
             <Options/>
         </Source>

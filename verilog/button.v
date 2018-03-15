@@ -30,5 +30,4 @@ begin
 	else
 		{resetn, counter} <= {resetn, counter} + 1'b1;
 end
-
 endmodule

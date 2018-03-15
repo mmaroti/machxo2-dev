@@ -3,7 +3,7 @@
     <Options/>
     <Implementation title="impl" dir="impl" description="impl" synthesis="lse" default_strategy="Strategy1">
         <Options def_top="fifo"/>
-        <Source name="fifo.v" type="Verilog" type_short="Verilog">
+        <Source name="../../verilog/pipeline.v" type="Verilog" type_short="Verilog">
             <Options top_module="fifo"/>
         </Source>
         <Source name="fifo_sim.v" type="Verilog" type_short="Verilog" syn_sim="SimOnly">

@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2017, Miklos Maroti
- * This file is released under the 3-clause BSD licence.
+ * This is free software released under the 3-clause BSD licence.
  */
 
 `timescale 1ns/100ps
@@ -25,7 +25,7 @@ wire valid2;
 reg ready2;
 wire [1:0] size;
 
-buffer #(.SIZE(7)) buffer(
+fifo #(.SIZE(7)) fifo(
 	.clock(clock), 
 	.resetn(resetn),
 	.size(size),
