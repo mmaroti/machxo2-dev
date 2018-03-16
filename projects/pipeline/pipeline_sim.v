@@ -13,7 +13,7 @@ wire [7:0] data1;
 wire valid1, ready1;
 reg enabled;
 
-counter counter(
+axis_counter counter(
 	.clock(clock), 
 	.resetn(resetn), 
 	.odata(data1), 
@@ -23,9 +23,9 @@ counter counter(
 wire [7:0] data2;
 wire valid2;
 reg ready2;
-wire [1:0] size;
+wire [2:0] size;
 
-fifo #(.SIZE(7)) fifo(
+axis_fifo #(.SIZE(7)) fifo(
 	.clock(clock), 
 	.resetn(resetn),
 	.size(size),

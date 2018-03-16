@@ -13,5 +13,5 @@
             <Options/>
         </Source>
     </Implementation>
-    <Strategy name="Strategy1" file="reset1.sty"/>
+    <Strategy name="Strategy" file="../strategy.sty"/>
 </BaliProject>
