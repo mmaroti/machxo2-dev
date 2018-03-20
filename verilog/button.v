@@ -10,24 +10,24 @@
  */
 module button #(parameter DELAY = 2) (
 	input wire clock,
-	input wire resetn_pin,
-	output reg resetn);
-
-reg resetn_pin2 = 1'b1;
+	input wire signal_pin,
+	output reg signal);
 
 // use extra register to avoid metastability
+reg signal_pin2 = 1'b1;
+
 always @(posedge clock)
 begin
-	resetn_pin2 <= resetn_pin;
+	signal_pin2 <= signal_pin;
 end
 
 reg [DELAY-1:0] counter = 0;
 
 always @(posedge clock)
 begin
-	if (resetn_pin2 == resetn)
+	if (signal_pin2 == signal)
 		counter <= 1'b0;
 	else
-		{resetn, counter} <= {resetn, counter} + 1'b1;
+		{signal, counter} <= {signal, counter} + 1'b1;
 end
 endmodule

@@ -16,8 +16,8 @@ OSCH #(.NOM_FREQ("133.00")) osch(
 wire resetn;
 button resetn_gen(
 	.clock(clock), 
-	.resetn(resetn), 
-	.resetn_pin(resetn_pin));
+	.signal(resetn), 
+	.signal_pin(resetn_pin));
 
 wire [7:0] counter1;
 wire valid1;

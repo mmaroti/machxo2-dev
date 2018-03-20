@@ -13,7 +13,7 @@ OSCH #(.NOM_FREQ("133.00")) osch(.STDBY(1'b0), .OSC(clock), .SEDSTDBY());
 // make the delay 27 for testing purposes (requires around 1 sec long press)
 wire resetn;
 button #(.DELAY(27)) 
-	resetn_gen(.clock(clock), .resetn(resetn), .resetn_pin(resetn_pin));
+	resetn_gen(.clock(clock), .signal(resetn), .signal_pin(resetn_pin));
 
 reg [31:0] counter;
 always @(posedge clock or negedge resetn)
