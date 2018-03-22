@@ -30,7 +30,7 @@ endmodule
  * This block slows down the flow of elements from the input to the
  * output by moving data at every DELAY clock cycle.
  */
-module axis_throttle #(parameter integer WIDTH = 8, DELAY = 2, DELAY_WIDTH = $clog2(DELAY-1)) (
+module axis_throttle #(parameter integer WIDTH = 8, DELAY = 2, DELAY_WIDTH = $clog2(DELAY - 1)) (
 	input wire clock,
 	input wire resetn,
 	input wire [WIDTH-1:0] idata,
@@ -45,17 +45,11 @@ reg [DELAY_WIDTH:0] delay;
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
-	begin
 		delay <= DELAY - 2;
-	end
 	else if (delay[DELAY_WIDTH])
-	begin
 		delay <= DELAY - 2;
-	end
 	else
-	begin
-		delay <= delay - 1'b1;
-	end
+		delay <= delay - 1;
 end
 
 assign ovalid = ivalid && delay[DELAY_WIDTH];

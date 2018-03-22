@@ -26,8 +26,8 @@ reg [DELAY-1:0] counter = 0;
 always @(posedge clock)
 begin
 	if (signal_pin2 == signal)
-		counter <= 1'b0;
+		counter <= 0;
 	else
-		{signal, counter} <= {signal, counter} + 1'b1;
+		{signal, counter} <= {signal, counter} + 1;
 end
 endmodule
