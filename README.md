@@ -1,16 +1,18 @@
 # machxo2-dev
 
-This repository contains FPGA and driver examples for the [MachXO2 Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/MachXO2BreakoutBoard), 
-but the code should work on any FPGA. The reusable verilog modules are under the 
+This repository contains FPGA and driver examples for the [MachXO2 Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/MachXO2BreakoutBoard),
+but the code should work on any FPGA. The reusable verilog modules are under the
 [verilog](verilog) directory. The following example projects are provided:
+
 * [Blink](projects/blink) application
-* [Reset](projects/reset) application with debouncing [button.v](verilog/button.v) module
-* [Pipeline](projects/pipeline) application
+* [Reset](projects/reset) application introducing debouncing
+* [Pipeline](projects/pipeline) project introducing AXI streams
+* [RS232 transmitter](projects/rs232tx) application with hardware flow control and C driver
 
 # Linux setup notes
 
 ## Install the Lattice Diamond software
-I have followed steps 1 and 2 from these 
+I have followed steps 1 and 2 from these
 [instructions](https://ycnrg.org/lattice-diamond-on-ubuntu-16-04/)
 with the following differences:
 * I used `sudo apt-get install python-libusb1` instead of `sudo pip install libusb1`
@@ -20,7 +22,7 @@ with the following differences:
 * When you first run diamond it will ask for your license file. You can get a free license
 from lattice, and I have copied that to the `/opt/diamond/3.10_x64/license/` directory.
 * You have to grant read-write access to the FTDI USB device and prevent the kernel from
-loading its default ftdi_sio driver. Copy the [49-lattice.rules](49-lattice.rules) udev script 
+loading its default ftdi_sio driver. Copy the [49-lattice.rules](49-lattice.rules) udev script
 with `sudo cp 49-lattice.rules /etc/udev/rules.d` and reload the rules with
 `sudo udevadm control --reload-rules && sudo udevadm trigger`.
 
