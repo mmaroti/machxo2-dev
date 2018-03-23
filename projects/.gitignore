@@ -5,4 +5,7 @@
 !*/*.lpf
 !*/*.sty
 !*/*.v
+!*/*.c
+!*/*.h
+!*/Makefile
 */*_tmpl.v
