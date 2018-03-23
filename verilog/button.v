@@ -28,6 +28,6 @@ begin
 	if (signal_pin2 == signal)
 		counter <= 0;
 	else
-		{signal, counter} <= {signal, counter} + 1;
+		{signal, counter} <= {signal, counter} + 1'b1;
 end
 endmodule

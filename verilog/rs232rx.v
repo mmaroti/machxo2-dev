@@ -3,6 +3,12 @@
  * This is free software released under the 3-clause BSD licence.
  */
 
+/**
+ * This module convertes an RS232 serial interface with hardware control into
+ * a push based handshake with almost full signal. The rxd_pin must be connected
+ * to the TXD pin of the transmitter, and the rtsn_pin must be connected to the
+ * CTSn pin of the transmitter.
+ */
 module rs232_to_push #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	input wire clock,
 	input wire resetn,
@@ -35,17 +41,18 @@ begin
 end
 
 /*
- * The state is a 4-bit number which is 2 plus the number of read bits 
- * including the start and stop bits. Thus the idle state is 12 when 
- * we are looking for the start bit. We are going to reset the baud 
+ * The state is a 4-bit number which is 2 plus the number of read bits
+ * including the start and stop bits. Thus the idle state is 12 when
+ * we are looking for the start bit. We are going to reset the baud
  * counter when in this idle state. The other important state is 10,
- * when we have the start and 7 data bits in the data register. We 
+ * when we have the start and 7 data bits in the data register. We
  * have chosen this encoding so that only a few logic inputs are
  * required to check for these states.
  */
 
 reg [3:0] state;
 wire baud_reset = state[3] && state[2]; // state is 12
+wire baud_tick;
 
 always @(posedge clock or negedge resetn)
 begin
@@ -78,7 +85,7 @@ localparam integer BAUD_COUNT_FULL = 1.0 * CLOCK_FREQ / BAUD_RATE;
 localparam integer BAUD_WIDTH = $clog2(BAUD_COUNT_FULL - 1);
 
 reg [BAUD_WIDTH:0] baud_counter;
-wire baud_tick = baud_counter[BAUD_WIDTH];
+assign baud_tick = baud_counter[BAUD_WIDTH];
 
 always @(posedge clock or negedge resetn)
 begin
@@ -89,11 +96,11 @@ begin
 	else if (baud_tick)
 		baud_counter <= BAUD_COUNT_FULL - 2;
 	else
-		baud_counter <= baud_counter - 1;
+		baud_counter <= baud_counter - 1'b1;
 end
 
 /*
- * We clock in data from the RXD pin to the data shift register at 
+ * We clock in data from the RXD pin to the data shift register at
  * every bound tick. We will have to make sure to strobe the owrite
  * signal when all data is in (and the start bit is out) and the
  * end bit is not yet in.
@@ -117,6 +124,6 @@ begin
 	if (!resetn)
 		owrite <= 1'b0;
 	else
-		owrite <= state[3] && state[1] && !state[0] && baud_tick; 
+		owrite <= state[3] && state[1] && !state[0] && baud_tick;
 end
 endmodule
