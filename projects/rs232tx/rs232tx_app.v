@@ -57,7 +57,7 @@ axis_throttle #(.DELAY(1000000)) throttle_inst(
 // localparam BAUD_RATE = 115200;
 localparam BAUD_RATE = 12000000;
 
-axis_rs232tx #(.CLOCK_FREQ(133000000), .BAUD_RATE(BAUD_RATE)) rs232tx_inst(
+axis_to_rs232 #(.CLOCK_FREQ(133000000), .BAUD_RATE(BAUD_RATE)) rs232tx_inst(
     .clock(clock),
     .resetn(resetn),
     .idata(counter),

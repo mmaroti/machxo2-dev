@@ -3,36 +3,35 @@
  * This is free software released under the 3-clause BSD licence.
  */
 
-module axis_rs232tx #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200) (
+/**
+ * This module convertes an AXI stream byte stream to a RS232 serial interface
+ * with hardware flow control. The implementation might start the transmission
+ * of one extra byte when the CTSn is set to low, but this is normal in serial
+ * communication. The txd_pin must be connected to the RXD pin of the receiver.
+ * The ctsn_pin must be connected to the RTSn pin of the receiver.
+ */
+module axis_to_rs232 #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	input wire clock,
 	input wire resetn,
 	input wire [7:0] idata,
 	input wire ivalid,
 	output reg iready,
-	output reg txd_pin,	// connected to RXD pin of receiver
-	input wire ctsn_pin); // connected to RTSn pin of receiver
+	output reg txd_pin,
+	input wire ctsn_pin);
 
-reg ctsn, ctsn_pin2; // metastable buffering
-
-always @(posedge clock or negedge resetn)
-begin
-	if (!resetn)
-	begin
-		ctsn <= 1'b1;
-		ctsn_pin2 <= 1'b1;
-	end
-	else
-	begin
-		ctsn <= ctsn_pin2;
-		ctsn_pin2 <= ctsn_pin;
-	end
-end
+/*
+ * This is the baud rate generator that sets baud_tick to 1 for one clock
+ * every BAUD_COUNT many clock cycles. We count downwards and use the highest
+ * bit as the baud_tick when underflow occurs. When BAUD_COUNT is 2, then
+ * we see that baud_counter needs to be set to 0, so in the next cycle we
+ * get the desired underflow.
+ */
 
 localparam integer BAUD_COUNT = 1.0 * CLOCK_FREQ / BAUD_RATE;
 localparam integer BAUD_WIDTH = $clog2(BAUD_COUNT - 1);
 
 reg [BAUD_WIDTH:0] baud_counter;
-wire baud_tick = baud_counter[BAUD_WIDTH]; // set at underflow
+wire baud_tick = baud_counter[BAUD_WIDTH];
 
 always @(posedge clock or negedge resetn)
 begin
@@ -44,29 +43,32 @@ begin
 		baud_counter <= baud_counter - 1;
 end
 
-reg [7:0] buffer; // shifting bits out to txd
+/*
+ * We use a shift register buffer to shift the bits out. Transmission
+ * starts when iready and ivalid are both true, and continuous at every
+ * baud tick. We add one the 0 start bit and the 1 stop bit.
+ */
+
+reg [7:0] buffer;
 
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
-	begin
-		txd_pin <= 1'b1;
-		buffer <= 8'b1111111;
-	end
+		{buffer, txd_pin} <= 9'b111111111;
 	else if (iready && ivalid)
-	begin
-		txd_pin <= 1'b0;
-		buffer <= idata;
-	end
+		{buffer, txd_pin} <= {idata, 1'b0};
 	else if (baud_tick)
-	begin
-		txd_pin <= buffer[0];
-		buffer[6:0] <= buffer[7:1];
-		buffer[7] <= 1'b1;
-	end
+		{buffer, txd_pin} <= {1'b1, buffer};
 end
 
-reg [3:0] state; // the number of bits sent out
+/*
+ * The state is a 4-bit number containing the number of bits we sent
+ * including the start and stop bits. Thus state becomes zero when
+ * we start sending the start bit, and becomes 10 just after finishing
+ * the transmission of the stop bit.
+ */
+
+reg [3:0] state;
 
 always @(posedge clock or negedge resetn)
 begin
@@ -77,6 +79,31 @@ begin
 	else if (baud_tick)
 		state <= state + 4'b0001;
 end
+
+/*
+ * We use two registers to avoid metastability problems on the CTSn pin.
+ */
+
+reg ctsn, ctsn_pin2;
+
+always @(posedge clock or negedge resetn)
+begin
+	if (!resetn)
+		{ctsn, ctsn_pin2} <= 2'b11;
+	else
+		{ctsn, ctsn_pin2} <= {ctsn_pin2, ctsn_pin};
+end
+
+/*
+ * Iready becomes false when we start the transmission or when the
+ * receiver is indicating to stop with the CTSn signal (which is
+ * slightly delayed by the buffering). Iready becomes true when
+ * state is 10 (we are getting smart and check this condition
+ * using state[3] && state[1]). We leave the state counter and the
+ * baud rate generator running, because more logic (and LUTs) would
+ * be needed to prevent them updating. Thus we has to stay in iready
+ * mode once we are already there.
+ */
 
 always @(posedge clock or negedge resetn)
 begin

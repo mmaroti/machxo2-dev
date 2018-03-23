@@ -14,3 +14,4 @@ clean:
 	rm -f *.ccl
 	rm -f *.log
 	rm -f *.tpf
+	rm -f *.htm
