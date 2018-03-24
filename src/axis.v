@@ -30,7 +30,7 @@ endmodule
  * This block slows down the flow of elements from the input to the
  * output by moving data at every DELAY clock cycle.
  */
-module axis_throttle #(parameter integer WIDTH = 8, DELAY = 2, DELAY_WIDTH = $clog2(DELAY - 1)) (
+module axis_throttle #(parameter integer WIDTH = 8, DELAY = 2) (
 	input wire clock,
 	input wire resetn,
 	input wire [WIDTH-1:0] idata,
@@ -40,6 +40,7 @@ module axis_throttle #(parameter integer WIDTH = 8, DELAY = 2, DELAY_WIDTH = $cl
 	output wire ovalid,
 	input wire oready);
 
+localparam integer DELAY_WIDTH = $clog2(DELAY - 1);
 reg [DELAY_WIDTH:0] delay;
 
 always @(posedge clock or negedge resetn)
@@ -103,7 +104,7 @@ endmodule
  * interfaces. If SIZE is 1, then this module is functionally equivalent 
  * to the axis pipe.
  */
-module axis_fifo #(parameter integer WIDTH = 8, SIZE = 3, SIZE_WIDTH = $clog2(SIZE + 1)) (
+module axis_fifo #(parameter integer WIDTH = 8, SIZE = 3) (
 	input wire clock,
 	input wire resetn,
 	output reg [SIZE_WIDTH-1:0] size,
@@ -114,6 +115,7 @@ module axis_fifo #(parameter integer WIDTH = 8, SIZE = 3, SIZE_WIDTH = $clog2(SI
 	output reg ovalid,
 	input wire oready);
 
+localparam integer SIZE_WIDTH = $clog2(SIZE + 1);
 integer i;
 
 wire itransfer = ivalid && iready;
@@ -170,4 +172,29 @@ begin
 	else
 		odata <= buffer2[size2];
 end
+endmodule
+
+module push_to_axis #(parameter integer WIDTH = 8) (
+	input wire clock,
+	input wire resetn,
+	input wire [WIDTH-1:0] idata;
+	input wire iwrite;
+	output reg iafull;
+	input wire [WIDTH-1:0] idata;
+	input wire iwrite;
+	output reg iafull;
+	output reg overflow,
+	input wire iwren,
+	output wire ovalid,
+	input wire oready);
+
+	assign ovalid = iwren;
+
+	always @(posedge clock or negedge resetn)
+	begin
+		if (!resetn)
+			overflow <= 1'b0;
+		else if (iwren && !oready)
+			overflow <= 1'b1;
+	end
 endmodule

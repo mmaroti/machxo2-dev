@@ -114,7 +114,7 @@ begin
 		odata <= {rxd, odata[7:1]};
 end
 
-/**
+/*
  * The output data becomes valid when state is 10, and baud tick is on,
  * so we are just shifting in the last data bit.
  */
