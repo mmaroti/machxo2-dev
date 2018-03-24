@@ -67,7 +67,7 @@ endmodule
  * is false. Complicated pipelines can be built with continous logic
  * blocks that are connected with axis pipes.
  */
-module axis_pipe #(parameter WIDTH = 8) (
+module axis_output #(parameter WIDTH = 8) (
 	input wire clock,
 	input wire resetn,
 	input wire [WIDTH-1:0] idata,
@@ -77,24 +77,30 @@ module axis_pipe #(parameter WIDTH = 8) (
 	output reg ovalid,
 	input wire oready);
 
-reg [WIDTH-1:0] buffer; // bvalid = !iready (&& ovalid)
+/*
+ * iready && !ovalid: buffer is empty, odata is empty
+ * iready && ovalid: buffer is empty, odata is full
+ * !iready && ovalid: buffer is full, odata is full
+ * !iready && !ovalid: cannot happen
+ */
+
+reg [WIDTH-1:0] buffer;
 
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
 	begin
-		iready <= 1'b1;
 		odata <= {WIDTH{1'bx}};
 		ovalid <= 1'b0;
 		buffer <= {WIDTH{1'bx}};
+		iready <= 1'b1;
 	end
 	else
 	begin
-		ovalid <= (ovalid && !oready) || !iready || ivalid;
 		odata <= (ovalid && !oready) ? odata : (!iready ? buffer : idata);
-
+		ovalid <= (ovalid && !oready) || !iready || ivalid;
+		buffer <= (!iready && !oready) ? buffer : idata;
 		iready <= !ovalid || oready || (iready && !ivalid);
-		buffer <= (ovalid && !oready && iready && ivalid) ? idata : buffer;
 	end
 end
 endmodule
@@ -104,7 +110,7 @@ endmodule
  * interfaces. If SIZE is 1, then this module is functionally equivalent 
  * to the axis pipe.
  */
-module axis_fifo #(parameter integer WIDTH = 8, SIZE = 3) (
+module axis_fifo #(parameter integer WIDTH = 8, SIZE = 3, SIZE_WIDTH = $clog2(SIZE + 1)) (
 	input wire clock,
 	input wire resetn,
 	output reg [SIZE_WIDTH-1:0] size,
@@ -115,7 +121,6 @@ module axis_fifo #(parameter integer WIDTH = 8, SIZE = 3) (
 	output reg ovalid,
 	input wire oready);
 
-localparam integer SIZE_WIDTH = $clog2(SIZE + 1);
 integer i;
 
 wire itransfer = ivalid && iready;
@@ -172,29 +177,4 @@ begin
 	else
 		odata <= buffer2[size2];
 end
-endmodule
-
-module push_to_axis #(parameter integer WIDTH = 8) (
-	input wire clock,
-	input wire resetn,
-	input wire [WIDTH-1:0] idata;
-	input wire iwrite;
-	output reg iafull;
-	input wire [WIDTH-1:0] idata;
-	input wire iwrite;
-	output reg iafull;
-	output reg overflow,
-	input wire iwren,
-	output wire ovalid,
-	input wire oready);
-
-	assign ovalid = iwren;
-
-	always @(posedge clock or negedge resetn)
-	begin
-		if (!resetn)
-			overflow <= 1'b0;
-		else if (iwren && !oready)
-			overflow <= 1'b1;
-	end
 endmodule

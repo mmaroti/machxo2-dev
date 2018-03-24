@@ -15,7 +15,7 @@ module rs232_to_push #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	input wire rxd_pin, // connected to the TXD pin of receiver
 	output wire rtsn_pin, // connected to the CTSn pin of receiver
 	output reg [7:0] odata,
-	output reg owrite,
+	output reg oenable,
 	input wire oafull);
 
 /*
@@ -101,7 +101,7 @@ end
 
 /*
  * We clock in data from the RXD pin to the data shift register at
- * every bound tick. We will have to make sure to strobe the owrite
+ * every bound tick. We will have to make sure to strobe the oenable
  * signal when all data is in (and the start bit is out) and the
  * end bit is not yet in.
  */
@@ -122,8 +122,8 @@ end
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
-		owrite <= 1'b0;
+		oenable <= 1'b0;
 	else
-		owrite <= state[3] && state[1] && !state[0] && baud_tick;
+		oenable <= state[3] && state[1] && !state[0] && baud_tick;
 end
 endmodule

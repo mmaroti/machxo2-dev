@@ -24,7 +24,7 @@ button resetn_gen(
 	.signal_pin(resetn_pin));
 
 wire [7:0] data;
-wire write;
+wire enable;
 
 // localparam BAUD_RATE = 115200;
 localparam BAUD_RATE = 12000000;
@@ -35,7 +35,7 @@ rs232_to_push #(.CLOCK_FREQ(133000000), .BAUD_RATE(BAUD_RATE)) rs232_rx(
     .rxd_pin(rxd_pin),
     .rtsn_pin(rtsn_pin),
     .odata(data),
-    .owrite(write),
+    .oenable(enable),
     .oafull(1'b0));
 
 reg [7:0] counter;
@@ -44,7 +44,7 @@ always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
 		counter <= 8'b0;
-	else if (write)
+	else if (enable)
 	begin
 		counter[7:4] <= data[7:4];
 		counter[3:0] <= counter[3:0] + 1'b1;
