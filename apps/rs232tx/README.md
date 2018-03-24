@@ -1,7 +1,7 @@
 # Sending data from the FPGA to the PC using RS232
 
 The MachXO2 breakout board has a built in FTDI FT2232H chip. That chip has two channels: channel A is used for programming and channel B can be used for serial communication. I have implemented an 
-RS232 serial transmitter [rs232tx.v](../../verilog/rs232tx.v) module that accepts an AXI stream of
+RS232 serial transmitter [rs232tx.v](/src/rs232tx.v) module that accepts an AXI stream of
 bytes and sends it to the FT2232H chip. This was rather difficult (at least for me) even though
 there are plenty of examples on the internet. The main problem was minimal use of FPGA resources
 and to provide hardware flow control using the CTSn signal.

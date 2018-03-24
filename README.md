@@ -2,12 +2,13 @@
 
 This repository contains FPGA and driver examples for the [MachXO2 Breakout Board](http://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/MachXO2BreakoutBoard),
 but the code should work on any FPGA. The reusable verilog modules are under the
-[verilog](verilog) directory. The following example projects are provided:
+[src directory](src). The following example projects are provided:
 
-* [Blink](projects/blink) application
-* [Reset](projects/reset) application introducing debouncing
-* [Pipeline](projects/pipeline) project introducing AXI streams
-* [RS232 transmitter](projects/rs232tx) application with hardware flow control and C driver
+* [Blink](/apps/blink) application
+* [Reset](/apps/reset) application introducing debouncing
+* [Pipeline](/apps/pipeline) project introducing AXI streams
+* [RS232 transmitter](/apps/rs232tx) application with hardware flow control and C driver
+* [RS232 receiver](/apps/rs232rx) application with hardware flow control and C driver
 
 # Linux setup notes
 

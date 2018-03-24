@@ -9,10 +9,10 @@
         <Source name="pipeline_sim.v" type="Verilog" type_short="Verilog" syn_sim="SimOnly">
             <Options/>
         </Source>
-        <Source name="../../verilog/axis.v" type="Verilog" type_short="Verilog">
+        <Source name="../../src/axis.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
-        <Source name="../../verilog/button.v" type="Verilog" type_short="Verilog">
+        <Source name="../../src/button.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
         <Source name="pipeline.lpf" type="Logic Preference" type_short="LPF">

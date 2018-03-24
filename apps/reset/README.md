@@ -1,7 +1,7 @@
 # Adding a reset button
 
 I have added a reset button to the breakout board (connecting pin 84 to GND when the button is pressed).
-The [button.v](../../verilog/button.v) module 
+The [button.v](/src/button.v) module 
 [debounces](https://en.wikipedia.org/wiki/Switch#Contact_bounce)
 the `resetn_pin` input signal and holds the `resetn` wire low for several clock cycles to ensure good reset.
 The `resetn_pin` is active low, so the internal pull up resistor is enabled in the configuration file.

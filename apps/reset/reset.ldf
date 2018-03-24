@@ -6,7 +6,7 @@
         <Source name="reset_app.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>
         </Source>
-        <Source name="../../verilog/button.v" type="Verilog" type_short="Verilog">
+        <Source name="../../src/button.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
         <Source name="reset.lpf" type="Logic Preference" type_short="LPF">
