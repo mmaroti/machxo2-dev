@@ -9,7 +9,7 @@
  * the right version of block ram module. The rdata is one clock cycle
  * delayed with respect to the raddr.
  */
-module dual_port_ram #(parameter WIDTH = 8, SIZE_LOG2 = 8) (
+module dual_port_ram #(parameter WIDTH = 10, SIZE_LOG2 = 8) (
 	input wire wclock,
 	input wire [SIZE_LOG2-1:0] waddr,
 	input wire [WIDTH-1:0] wdata,

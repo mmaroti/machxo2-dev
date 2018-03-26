@@ -50,7 +50,7 @@ begin
 	else if (delay[DELAY_WIDTH])
 		delay <= DELAY - 2;
 	else
-		delay <= delay - 1;
+		delay <= delay - 1'b1;
 end
 
 assign ovalid = ivalid && delay[DELAY_WIDTH];

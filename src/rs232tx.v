@@ -40,7 +40,7 @@ begin
 	else if (baud_tick || (iready && ivalid))
 		baud_counter <= BAUD_COUNT - 2;
 	else
-		baud_counter <= baud_counter - 1;
+		baud_counter <= baud_counter - 1'b1;
 end
 
 /*
