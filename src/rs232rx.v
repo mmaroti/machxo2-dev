@@ -13,24 +13,15 @@ module rs232_to_push #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200) (
 	input wire clock,
 	input wire resetn,
 	input wire rxd_pin, // connected to the TXD pin of receiver
-	output wire rtsn_pin, // connected to the CTSn pin of receiver
+	output reg rtsn_pin, // connected to the CTSn pin of receiver
 	output reg [7:0] odata,
 	output reg oenable,
 	input wire oafull);
 
 /*
- * We pass through the almost full signal on the RSTn pin to indicate
- * to the sender to stop sending data. Hopefully it will react fast
- * enough not to cause problems in later FIFOs.
- */
-
-assign rtsn_pin = oafull;
-
-/*
  * We use two registers to avoid metastability problems on the RXD pin.
  */
-
-reg rxd, rxd_pin2; // metastable buffering
+reg rxd, rxd_pin2;
 
 always @(posedge clock or negedge resetn)
 begin
@@ -49,9 +40,8 @@ end
  * have chosen this encoding so that only a few logic inputs are
  * required to check for these states.
  */
-
 reg [3:0] state;
-wire baud_reset = state[3] && state[2]; // state is 12
+wire baud_reset = state[3] && state[2]; // state is 12, idle state
 wire baud_tick;
 
 always @(posedge clock or negedge resetn)
@@ -79,7 +69,6 @@ end
  * to align the data sampling to the middle of the bit streams. Also, this
  * is rounded down bacause of the logic has a single clock delay.
  */
-
 localparam integer BAUD_COUNT_HALF = 0.5 * CLOCK_FREQ / BAUD_RATE - 0.5;
 localparam integer BAUD_COUNT_FULL = 1.0 * CLOCK_FREQ / BAUD_RATE;
 localparam integer BAUD_WIDTH = $clog2(BAUD_COUNT_FULL - 1);
@@ -105,7 +94,6 @@ end
  * signal when all data is in (and the start bit is out) and the
  * end bit is not yet in.
  */
-
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
@@ -118,12 +106,24 @@ end
  * The output data becomes valid when state is 10, and baud tick is on,
  * so we are just shifting in the last data bit.
  */
-
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
 		oenable <= 1'b0;
 	else
 		oenable <= state[3] && state[1] && !state[0] && baud_tick;
+end
+
+/*
+ * We pass through the almost full signal on the RSTn pin to indicate
+ * to the sender to stop sending data. We update this pin in idle mode
+ * only to remove jitter on this line.
+ */
+always @(posedge clock or negedge resetn)
+begin
+	if (!resetn)
+		rtsn_pin <= 1'b1;
+	else if (baud_reset)
+		rtsn_pin <= oafull;
 end
 endmodule

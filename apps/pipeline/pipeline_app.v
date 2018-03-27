@@ -14,31 +14,29 @@ OSCH #(.NOM_FREQ("133.00")) osch(
 	.SEDSTDBY());
 
 wire resetn;
-button resetn_gen(
+button button_resetn(
 	.clock(clock), 
 	.signal(resetn), 
 	.signal_pin(resetn_pin));
 
-wire [7:0] counter1;
-wire valid1;
-wire ready1;
-axis_counter #(.WIDTH(8)) counter_gen(
+wire [7:0] data1;
+wire valid1, ready1;
+axis_counter #(.WIDTH(8)) counter(
 	.clock(clock), 
 	.resetn(resetn), 
-	.odata(counter1), 
+	.odata(data1), 
 	.ovalid(valid1), 
 	.oready(ready1));
 
-wire [7:0] counter2;
-wire valid2;
-wire ready2;
-axis_throttle #(.WIDTH(8), .DELAY(133000000)) delay_gen(
+wire [7:0] data2;
+wire valid2, ready2;
+axis_throttle #(.WIDTH(8), .DELAY(133000000)) throttle(
 	.clock(clock), 
 	.resetn(resetn), 
-	.idata(counter1), 
+	.idata(data1), 
 	.ivalid(valid1), 
 	.iready(ready1), 
-	.odata(counter2), 
+	.odata(data2), 
 	.ovalid(valid2), 
 	.oready(ready2));
 
@@ -48,8 +46,8 @@ always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
 		leds <= 8'b10101010;
-	else
-		leds <= ~counter2;
+	else if (valid2)
+		leds <= ~data2;
 end
 
 endmodule

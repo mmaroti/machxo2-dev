@@ -59,17 +59,20 @@ assign odata = idata;
 endmodule	
 
 /**
- * Moves data from idata to odata. Data is transferred on the ports
- * when both xvalid and xready are high on the rising edge of the clock.
- * This block can move data on every clock, and all its outputs are
- * registered (including iready). This means, that it will store the
- * accepted input value when both iready and ivalid are true and oready
- * is false. Complicated pipelines can be built with continous logic
- * blocks that are connected with axis pipes.
+ * Moves data from idata to odata. Data is transferred on the ports when both
+ * xvalid and xready are high on the rising edge of the clock. This block can
+ * move data on every clock, and all its outputs are registered (including
+ * iready). This means, that it will store the accepted input value in an
+ * internal buffer when both iready and ivalid are true and oready is false.
+ * The size output is either 0, 1 or 2. It is 0 if the register is empty so no
+ * data is in flight. It is 1 in the steady state when the output is the old
+ * input value. It is 2 when the last output was not consumed but the input
+ * was accepted into an internal buffer.
  */
-module axis_output #(parameter WIDTH = 8) (
+module axis_register #(parameter WIDTH = 8) (
 	input wire clock,
 	input wire resetn,
+	output wire [1:0] size,
 	input wire [WIDTH-1:0] idata,
 	input wire ivalid,
 	output reg iready,
@@ -83,6 +86,9 @@ module axis_output #(parameter WIDTH = 8) (
  * !iready && ovalid: buffer is full, odata is full
  * !iready && !ovalid: cannot happen
  */
+
+assign size[0] = iready && ovalid;
+assign size[1] = !iready;
 
 reg [WIDTH-1:0] buffer;
 
@@ -106,9 +112,10 @@ end
 endmodule
 
 /**
- * An axis fifo buffer which takes data and produces data through pipe 
- * interfaces. If SIZE is 1, then this module is functionally equivalent 
- * to the axis pipe.
+ * An axis fifo buffer which takes data and produces data through pipe
+ * interfaces. If SIZE is 1, then this module is functionally equivalent to
+ * the axis pipe. The output size is the number of owned elements, which is a
+ * number in the range [0, SIZE].
  */
 module axis_fifo #(parameter integer WIDTH = 8, SIZE = 3, SIZE_WIDTH = $clog2(SIZE + 1)) (
 	input wire clock,
@@ -146,6 +153,7 @@ begin
 end
 
 reg [WIDTH-1:0] buffer[1:SIZE-1];
+
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
@@ -161,7 +169,8 @@ begin
 	end
 end
 
-reg [WIDTH-1:0] buffer2[0:SIZE];
+reg [WIDTH-1:0] buffer2[0:SIZE]; // this should be a wire
+
 always @(*)
 begin
 	buffer2[0] = idata;
@@ -176,5 +185,32 @@ begin
 		odata <= {WIDTH{1'bx}};
 	else
 		odata <= buffer2[size2];
+end
+endmodule
+
+/**
+ * Converts a push interface (with clock enable) to a axi stream interface
+ * with overflow error detection. The error flag is set on overflow, and
+ * it is cleared only at reset.
+ */
+module push_to_axis #(parameter integer WIDTH = 8) (
+	input wire clock,
+	input wire resetn,
+	output reg error,
+	input wire [WIDTH-1:0] idata,
+	input wire ienable,
+	output wire [WIDTH-1:0] odata,
+	output wire ovalid,
+	input wire oready);
+
+assign ovalid = ienable;
+assign odata = idata;
+
+always @(posedge clock or negedge resetn)
+begin
+	if (!resetn)
+		error <= 1'b0;
+	else
+		error <= (ienable && !oready) || error;
 end
 endmodule
