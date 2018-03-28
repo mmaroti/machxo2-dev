@@ -8,7 +8,7 @@ but the code should work on any FPGA. The reusable verilog modules are under the
 * [Reset](/apps/reset) application introducing debouncing
 * [Pipeline](/apps/pipeline) project introducing AXI streams
 * [RS232 transmitter](/apps/rs232tx) application with hardware flow control and C driver
-* [RS232 receiver](/apps/rs232rx) application with hardware flow control and C driver
+* [RS232 receiver](/apps/rs232rx) application with hardware flow control, close to 1.2 mbyte/sec throughput in loopback mode
 
 # Linux setup notes
 
