@@ -27,7 +27,7 @@ module axis_to_rs232 #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200) (
  * get the desired underflow.
  */
 
-localparam integer BAUD_COUNT = 1.0 * CLOCK_FREQ / BAUD_RATE;
+localparam [63:0] BAUD_COUNT = 1.0 * CLOCK_FREQ / BAUD_RATE;
 localparam integer BAUD_WIDTH = $clog2(BAUD_COUNT - 1);
 
 reg [BAUD_WIDTH:0] baud_counter;

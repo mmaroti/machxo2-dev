@@ -50,9 +50,7 @@ begin
 		state <= 4'b1100;
 	else if (baud_reset) // in idle state
 	begin
-		if (rxd)
-			state <= 4'b1100; // stay in idle
-		else
+		if (!rxd)
 			state <= 4'b0010; // start working
 	end
 	else if (baud_tick)
@@ -69,8 +67,8 @@ end
  * to align the data sampling to the middle of the bit streams. Also, this
  * is rounded down bacause of the logic has a single clock delay.
  */
-localparam integer BAUD_COUNT_HALF = 0.5 * CLOCK_FREQ / BAUD_RATE - 0.5;
-localparam integer BAUD_COUNT_FULL = 1.0 * CLOCK_FREQ / BAUD_RATE;
+localparam [63:0] BAUD_COUNT_HALF = 0.5 * CLOCK_FREQ / BAUD_RATE - 0.5;
+localparam [63:0] BAUD_COUNT_FULL = 1.0 * CLOCK_FREQ / BAUD_RATE;
 localparam integer BAUD_WIDTH = $clog2(BAUD_COUNT_FULL - 1);
 
 reg [BAUD_WIDTH:0] baud_counter;
@@ -94,17 +92,16 @@ end
  * signal when all data is in (and the start bit is out) and the
  * end bit is not yet in.
  */
-always @(posedge clock or negedge resetn)
+always @(posedge clock)
 begin
-	if (!resetn)
-		odata <= 8'b00000000;
-	else if (baud_tick)
+	// no async reset is necessary
+	if (baud_tick)
 		odata <= {rxd, odata[7:1]};
 end
 
 /*
- * The output data becomes valid when state is 10, and baud tick is on,
- * so we are just shifting in the last data bit.
+ * The output data becomes valid when state is 10, baud tick is on, so we 
+ * are just shifting in the last data bit and switching to state 11.
  */
 always @(posedge clock or negedge resetn)
 begin
@@ -115,15 +112,76 @@ begin
 end
 
 /*
- * We pass through the almost full signal on the RSTn pin to indicate
+ * We pass through the almost full signal on the RTSn pin to indicate
  * to the sender to stop sending data. We update this pin in idle mode
  * only to remove jitter on this line.
  */
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
-		rtsn_pin <= 1'b1;
+		rtsn_pin <= 1'b0;
 	else if (baud_reset)
 		rtsn_pin <= oafull;
+end
+endmodule
+
+/**
+ * This module convertes an RS232 serial interface with hardware control into
+ * an AXI stream interface with internal buffer. The default buffer size of 4
+ * seems to work with the FT2232 chip, but increase it if you run into problems.
+ */
+module rs232_to_axis #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200, BUFFER=4) (
+	input wire clock,
+	input wire resetn,
+	output wire overflow,
+	input wire rxd_pin, // connected to the TXD pin of receiver
+	output wire rtsn_pin, // connected to the CTSn pin of receiver
+	output wire [7:0] odata,
+	output wire ovalid,
+	input wire oready);
+
+wire [7:0] data1;
+wire enable1;
+reg afull1;
+rs232_to_push #(.CLOCK_FREQ(CLOCK_FREQ), .BAUD_RATE(BAUD_RATE)) rs232_to_push_inst(
+	.clock(clock),
+	.resetn(resetn),
+	.rxd_pin(rxd_pin),
+	.rtsn_pin(rtsn_pin),
+	.odata(data1),
+	.oenable(enable1),
+	.oafull(afull1));
+
+wire [7:0] data2;
+wire valid2, ready2;
+push_to_axis #(.WIDTH(8)) push_to_axis_inst(
+	.clock(clock),
+	.resetn(resetn),
+	.overflow(overflow),
+	.idata(data1),
+	.ienable(enable1),
+	.odata(data2),
+	.ovalid(valid2),
+	.oready(ready2));
+
+localparam integer BUFFER_WIDTH = $clog2(BUFFER + 1);
+wire [BUFFER_WIDTH-1:0] size;
+axis_small_fifo #(.WIDTH(8), .SIZE(BUFFER)) axis_small_fifo(
+	.clock(clock),
+	.resetn(resetn),
+	.size(size),
+	.idata(data2),
+	.ivalid(valid2),
+	.iready(ready2),
+	.odata(odata),
+	.ovalid(ovalid),
+	.oready(oready));
+
+always @(posedge clock or negedge resetn)
+begin
+	if (!resetn)
+		afull1 <= 1'b1;
+	else
+		afull1 <= size >= 2;
 end
 endmodule

@@ -1,3 +1,5 @@
+// gcc rs232tx_app.c -o rs232_app -lftdi1
+
 #include <libftdi1/ftdi.h>
 #include <stdio.h>
 #include <stdlib.h>

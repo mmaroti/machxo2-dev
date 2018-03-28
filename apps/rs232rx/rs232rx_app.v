@@ -12,62 +12,52 @@ module top(
 	input wire ctsn_pin);
 
 wire clock;
-OSCH #(.NOM_FREQ("133.00")) osch(
+OSCH #(.NOM_FREQ("133.00")) osch_inst(
 	.STDBY(1'b0),
 	.OSC(clock),
 	.SEDSTDBY());
 
 wire resetn;
-button resetn_gen(
+button button_inst(
 	.clock(clock),
 	.signal(resetn),
 	.signal_pin(resetn_pin));
 
-wire [7:0] data;
-wire enable;
-
 // localparam BAUD_RATE = 115200;
 localparam BAUD_RATE = 12000000;
 
-rs232_to_push #(.CLOCK_FREQ(133000000), .BAUD_RATE(BAUD_RATE)) rs232_rx(
+wire [7:0] data;
+wire overflow, valid, ready;
+rs232_to_axis #(.CLOCK_FREQ(133000000), .BAUD_RATE(BAUD_RATE), .BUFFER(4)) rs232_to_axis_inst(
     .clock(clock),
     .resetn(resetn),
+	.overflow(overflow),
     .rxd_pin(rxd_pin),
     .rtsn_pin(rtsn_pin),
     .odata(data),
-    .oenable(enable),
-    .oafull(1'b0));
+    .ovalid(valid),
+    .oready(ready));
 
-reg [7:0] counter;
-
-always @(posedge clock or negedge resetn)
-begin
-	if (!resetn)
-		counter <= 8'b0;
-	else if (enable)
-	begin
-		counter[7:4] <= data[7:4];
-		counter[3:0] <= counter[3:0] + 1'b1;
-	end
-end
+axis_to_rs232 #(.CLOCK_FREQ(133000000), .BAUD_RATE(BAUD_RATE)) axis_to_rs232_inst(
+    .clock(clock),
+    .resetn(resetn),
+    .idata(~data), // we negate the data here
+    .ivalid(valid),
+    .iready(ready),
+    .txd_pin(txd_pin),
+    .ctsn_pin(ctsn_pin));
 
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
 		leds <= 8'b10101010;
 	else
-		leds <= ~counter;
+	begin
+		leds[7] <= ~overflow;
+		leds[6] <= ~valid;
+		leds[5] <= ~ready;
+		if (valid && ready)
+			leds[4:0] <= ~data[4:0];
+	end
 end
-
-/*
-axis_to_rs232 #(.CLOCK_FREQ(133000000), .BAUD_RATE(BAUD_RATE)) rs232_tx(
-    .clock(clock),
-    .resetn(resetn),
-    .idata(data),
-    .ivalid(valid),
-    .iready(ready),
-    .txd_pin(txd_pin),
-    .ctsn_pin(ctsn_pin));
-*/
-
 endmodule

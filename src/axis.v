@@ -96,9 +96,8 @@ always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
 	begin
-		odata <= {WIDTH{1'bx}};
+		// omit async reset on odata and buffer
 		ovalid <= 1'b0;
-		buffer <= {WIDTH{1'bx}};
 		iready <= 1'b1;
 	end
 	else
@@ -117,7 +116,7 @@ endmodule
  * the axis pipe. The output size is the number of owned elements, which is a
  * number in the range [0, SIZE].
  */
-module axis_fifo #(parameter integer WIDTH = 8, SIZE = 3, SIZE_WIDTH = $clog2(SIZE + 1)) (
+module axis_small_fifo #(parameter integer WIDTH = 8, SIZE = 3, SIZE_WIDTH = $clog2(SIZE + 1)) (
 	input wire clock,
 	input wire resetn,
 	output reg [SIZE_WIDTH-1:0] size,
@@ -152,16 +151,12 @@ begin
 	end
 end
 
-reg [WIDTH-1:0] buffer[1:SIZE-1];
+reg [WIDTH-1:0] buffer [1:SIZE-1];
 
-always @(posedge clock or negedge resetn)
+always @(posedge clock)
 begin
-	if (!resetn)
-	begin
-		for (i = 1; i < SIZE; i = i + 1)
-			buffer[i] <= {WIDTH{1'bx}};
-	end
-	else if (itransfer)
+	// no async reset of buffer
+	if (itransfer)
 	begin
 		buffer[1] <= idata;
 		for (i = 2; i < SIZE; i = i + 1)
@@ -169,34 +164,32 @@ begin
 	end
 end
 
-reg [WIDTH-1:0] buffer2[0:SIZE]; // this should be a wire
+reg [WIDTH-1:0] buffer2 [0:SIZE]; // this will be a wire
 
-always @(*)
+always @(*)	// combinatorial
 begin
-	buffer2[0] = idata;
+	buffer2[0] <= idata;
 	for (i = 1; i < SIZE; i = i + 1)
-		buffer2[i] = buffer[i];
-	buffer2[SIZE] = odata;
+		buffer2[i] <= buffer[i];
+	buffer2[SIZE] <= odata;
 end
 
-always @(posedge clock or negedge resetn)
+always @(posedge clock)
 begin
-	if (!resetn)
-		odata <= {WIDTH{1'bx}};
-	else
-		odata <= buffer2[size2];
+	// no async reset of odata
+	odata <= buffer2[size2];
 end
 endmodule
 
 /**
  * Converts a push interface (with clock enable) to a axi stream interface
- * with overflow error detection. The error flag is set on overflow, and
+ * with overflow error detection. The overflow flag is set on overflow, and
  * it is cleared only at reset.
  */
 module push_to_axis #(parameter integer WIDTH = 8) (
 	input wire clock,
 	input wire resetn,
-	output reg error,
+	output reg overflow,
 	input wire [WIDTH-1:0] idata,
 	input wire ienable,
 	output wire [WIDTH-1:0] odata,
@@ -209,8 +202,8 @@ assign odata = idata;
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
-		error <= 1'b0;
+		overflow <= 1'b0;
 	else
-		error <= (ienable && !oready) || error;
+		overflow <= (ienable && !oready) || overflow;
 end
 endmodule
