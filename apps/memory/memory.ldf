@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BaliProject version="3.2" title="memory" device="LCMXO2-7000HE-4TG144C" default_implementation="impl">
+    <Options/>
+    <Implementation title="impl" dir="impl" description="impl" synthesis="lse" default_strategy="Timing">
+        <Options def_top="ram_dp_true" top="top"/>
+        <Source name="memory_app.v" type="Verilog" type_short="Verilog">
+            <Options top_module="top"/>
+        </Source>
+        <Source name="../../src/button.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="../../src/memory.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="ram_dp_true.ipx" type="IPX_Module" type_short="IPX">
+            <Options/>
+        </Source>
+        <Source name="memory.ldc" type="LSE Design Constraints File" type_short="LDC">
+            <Options/>
+        </Source>
+        <Source name="memory.lpf" type="Logic Preference" type_short="LPF">
+            <Options/>
+        </Source>
+    </Implementation>
+    <Strategy name="Strategy" file="../strategy.sty"/>
+</BaliProject>
