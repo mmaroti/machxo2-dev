@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<BaliProject version="3.2" title="memory" device="LCMXO2-7000HE-4TG144C" default_implementation="impl">
+<BaliProject version="3.2" title="memory" device="LCMXO2-7000HE-6TG144C" default_implementation="impl">
     <Options/>
     <Implementation title="impl" dir="impl" description="impl" synthesis="lse" default_strategy="Timing">
-        <Options def_top="ram_dp_true" top="top"/>
+        <Options def_top="ram_readfirst_outreg_9x1024" top="top"/>
         <Source name="memory_app.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>
         </Source>
@@ -12,7 +12,16 @@
         <Source name="../../src/memory.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
-        <Source name="ram_dp_true.ipx" type="IPX_Module" type_short="IPX">
+        <Source name="../../iplib/ram_readfirst_nonreg_9x1024.ipx" type="IPX_Module" type_short="IPX">
+            <Options/>
+        </Source>
+        <Source name="../../iplib/ram_writefirst_nonreg_9x1024.ipx" type="IPX_Module" type_short="IPX">
+            <Options/>
+        </Source>
+        <Source name="../../iplib/ram_readfirst_outreg_9x1024.ipx" type="IPX_Module" type_short="IPX">
+            <Options/>
+        </Source>
+        <Source name="../../iplib/ram_writefirst_outreg_9x1024.ipx" type="IPX_Module" type_short="IPX">
             <Options/>
         </Source>
         <Source name="memory.ldc" type="LSE Design Constraints File" type_short="LDC">

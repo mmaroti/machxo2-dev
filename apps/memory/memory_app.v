@@ -38,42 +38,44 @@ begin
 end
 
 wire [7:0] rdata;
-/*
-inferred_ram6 #(.DATA_WIDTH(8), .ADDR_WIDTH(10)) ram(
-	.wclock(clock),
-	.wenable(1'b1),
-	.waddr(waddr),
-	.wdata(waddr[7:0]),
-	.rclock(clock),
-	.renable(1'b1),
-	.raddr(raddr),
-	.rdata(rdata));
-*/
 
-/*
-ram_dp_true __ (.DataInA(waddr[7:0]), .DataInB( ), .AddressA(waddr), .AddressB(raddr), 
-    .ClockA(wclock), .ClockB(rclock), .ClockEnA(1'b1), .ClockEnB(1'b1), .WrA(1'b1), .WrB(1'b0), 
-    .ResetA(1'b0), .ResetB(1'b0), .QA(), .QB(rdata));
-*/
-
-inferred_ram7 #(.DATA_WIDTH(8), .ADDR_WIDTH(10)) ram(
-	.clock1(clock),
-	.enable1(1'b1),
-	.write1(1'b1),
-	.iaddr1(waddr),
+ram_writefirst_outreg_inferred #(.DATA_WIDTH(8), .ADDR_WIDTH(10)) ram_inst(
 	.idata1(waddr[7:0]),
-	.odata1(),
-	.clock2(clock),
-	.enable2(1'b1),
-	.write2(1'b0),
-	.iaddr2(raddr),
 	.idata2(8'b0),
+	.iaddr1(waddr), 
+    .iaddr2(raddr),
+	.clock1(clock),
+	.clock2(clock),
+	.enable1(1'b1),
+	.enable2(1'b1), 
+    .write1(1'b1),
+	.write2(1'b0),
+	.odata1(),
 	.odata2(rdata));
+
+/*
+wire rdata9;
+ram_writefirst_outreg_9x1024 ram_inst(
+	.DataInA({1'b0,waddr[7:0]}),
+	.DataInB(9'b0),
+	.AddressA(waddr), 
+    .AddressB(raddr),
+	.ClockA(clock),
+	.ClockB(clock),
+	.ClockEnA(1'b1),
+	.ClockEnB(1'b1), 
+    .WrA(1'b1),
+	.WrB(1'b0),
+	.ResetA(1'b0),
+	.ResetB(1'b0),
+	.QA(),
+	.QB({rdata8,rdata}));
+*/
 
 reg [7:0] rdata2;
 always @(posedge clock)
 begin
-	rdata2 <= rdata;
+	rdata2 <= ~rdata;
 end
 
 always @(posedge clock or negedge resetn)
@@ -81,7 +83,7 @@ begin
 	if (!resetn)
 		leds <= 8'b10101010;
 	else
-		leds <= ~rdata2;
+		leds <= rdata2;
 end
 
 endmodule
