@@ -1,0 +1,5 @@
+*
+!.gitignore
+!*.v
+!*.ipx
+*_tmpl.v
