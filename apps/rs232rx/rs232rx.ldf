@@ -2,7 +2,7 @@
 <BaliProject version="3.2" title="rs232rx" device="LCMXO2-7000HE-4TG144C" default_implementation="impl">
     <Options/>
     <Implementation title="impl" dir="impl" description="impl" synthesis="lse" default_strategy="Area">
-        <Options def_top="axis_fifo" top="top"/>
+        <Options def_top="axis_register" top="top"/>
         <Source name="rs232rx_app.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>
         </Source>

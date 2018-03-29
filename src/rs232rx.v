@@ -166,7 +166,7 @@ push_to_axis #(.WIDTH(8)) push_to_axis_inst(
 
 localparam integer BUFFER_WIDTH = $clog2(BUFFER + 1);
 wire [BUFFER_WIDTH-1:0] size;
-axis_small_fifo #(.WIDTH(8), .SIZE(BUFFER)) axis_small_fifo(
+axis_small_fifo #(.WIDTH(8), .SIZE(BUFFER)) axis_small_fifo_inst(
 	.clock(clock),
 	.resetn(resetn),
 	.size(size),

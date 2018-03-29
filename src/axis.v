@@ -112,7 +112,7 @@ endmodule
 
 /**
  * An axis fifo buffer which takes data and produces data through pipe
- * interfaces. If SIZE is 1, then this module is functionally equivalent to
+ * interfaces. If SIZE is 2, then this module is functionally equivalent to
  * the axis pipe. The output size is the number of owned elements, which is a
  * number in the range [0, SIZE].
  */
