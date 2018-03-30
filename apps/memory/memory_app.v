@@ -25,7 +25,16 @@ begin
 	if (!resetn)
 		waddr <= 10'h000;
 	else
-		waddr <= waddr + 1'b1;
+		waddr <= waddr + 10'h001;
+end
+
+reg [7:0] wdata;
+always @(posedge clock or negedge resetn)
+begin
+	if (!resetn)
+		wdata <= 8'h00;
+	else
+		wdata <= wdata + 8'h03;
 end
 
 reg [9:0] raddr;
@@ -34,56 +43,40 @@ begin
 	if (!resetn)
 		raddr <= 10'h100;
 	else
-		raddr <= raddr + 1'b1;
+		raddr <= raddr + 10'h005;
+end
+
+reg [1:0] control;
+always @(posedge clock or negedge resetn)
+begin
+	if (!resetn)
+		control <= 2'b0;
+	else
+		control <= control + 2'b1;
 end
 
 wire [7:0] rdata;
-
-ram_writefirst_outreg_inferred #(.DATA_WIDTH(8), .ADDR_WIDTH(10)) ram_inst(
-	.idata1(waddr[7:0]),
-	.idata2(8'b0),
-	.iaddr1(waddr), 
-    .iaddr2(raddr),
+true_dual_port_ram_outreg #(.DATA_WIDTH(8), .ADDR_WIDTH(10), .FIRST("WRITE")) ram_inst(
 	.clock1(clock),
-	.clock2(clock),
-	.enable1(1'b1),
-	.enable2(1'b1), 
-    .write1(1'b1),
-	.write2(1'b0),
+	.enable1(control[0]),
+	.write1(1'b1),
+	.addr1(waddr),
+	.idata1(wdata),
 	.odata1(),
+	.clock2(clock),
+	.enable2(control[1]),
+	.write2(1'b0),
+	.addr2(raddr),
+	.idata2(8'b0),
 	.odata2(rdata));
-
-/*
-wire rdata9;
-ram_writefirst_outreg_9x1024 ram_inst(
-	.DataInA({1'b0,waddr[7:0]}),
-	.DataInB(9'b0),
-	.AddressA(waddr), 
-    .AddressB(raddr),
-	.ClockA(clock),
-	.ClockB(clock),
-	.ClockEnA(1'b1),
-	.ClockEnB(1'b1), 
-    .WrA(1'b1),
-	.WrB(1'b0),
-	.ResetA(1'b0),
-	.ResetB(1'b0),
-	.QA(),
-	.QB({rdata8,rdata}));
-*/
-
-reg [7:0] rdata2;
-always @(posedge clock)
-begin
-	rdata2 <= ~rdata;
-end
 
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
 		leds <= 8'b10101010;
 	else
-		leds <= rdata2;
+	begin
+		leds <= ~rdata;
+	end
 end
-
 endmodule
