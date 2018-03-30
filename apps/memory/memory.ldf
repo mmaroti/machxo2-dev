@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BaliProject version="3.2" title="memory" device="LCMXO2-7000HE-4TG144C" default_implementation="impl">
     <Options/>
-    <Implementation title="impl" dir="impl" description="impl" synthesis="lse" default_strategy="Timing">
-        <Options def_top="true_dual_port_ram_writefirst_reg1" top="top"/>
+    <Implementation title="impl" dir="impl" description="impl" synthesis="lse" default_strategy="Area">
+        <Options def_top="simple_dual_port_ram_reg0" top="top"/>
         <Source name="memory_app.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>
         </Source>
@@ -28,6 +28,9 @@
             <Options/>
         </Source>
         <Source name="../../src/tdp_ram.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="../../src/sdp_ram.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
         <Source name="memory.ldc" type="LSE Design Constraints File" type_short="LDC">

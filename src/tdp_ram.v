@@ -19,9 +19,11 @@ module true_dual_port_ram_readfirst_reg1 #(parameter integer DATA_WIDTH = 8, ADD
 	input wire write2,
 	input wire [ADDR_WIDTH-1:0] addr2,
 	input wire [DATA_WIDTH-1:0] idata2,
-	output reg [DATA_WIDTH-1:0] odata2);
+	output reg [DATA_WIDTH-1:0] odata2)
+	/* synthesis syn_hier = "hard" */;
 
-reg [DATA_WIDTH-1:0] memory [(1<<ADDR_WIDTH)-1:0] /* synthesis syn_ramstyle="no_rw_check" */;
+reg [DATA_WIDTH-1:0] memory [(1<<ADDR_WIDTH)-1:0]
+	/* synthesis syn_ramstyle="no_rw_check" */;
 
 always @(posedge clock1)
 begin
@@ -60,9 +62,11 @@ module true_dual_port_ram_readfirst_reg2 #(parameter integer DATA_WIDTH = 8, ADD
 	input wire write2,
 	input wire [ADDR_WIDTH-1:0] addr2,
 	input wire [DATA_WIDTH-1:0] idata2,
-	output reg [DATA_WIDTH-1:0] odata2);
+	output reg [DATA_WIDTH-1:0] odata2)
+	/* synthesis syn_hier = "hard" */;
 
-reg [DATA_WIDTH-1:0] memory [(1<<ADDR_WIDTH)-1:0] /* synthesis syn_ramstyle="no_rw_check" */;
+reg [DATA_WIDTH-1:0] memory [(1<<ADDR_WIDTH)-1:0]
+	/* synthesis syn_ramstyle="no_rw_check" */;
 
 reg [DATA_WIDTH-1:0] odata1_reg;
 always @(posedge clock1)
@@ -105,9 +109,11 @@ module true_dual_port_ram_writefirst_reg1 #(parameter integer DATA_WIDTH = 8, AD
 	input wire write2,
 	input wire [ADDR_WIDTH-1:0] addr2,
 	input wire [DATA_WIDTH-1:0] idata2,
-	output reg [DATA_WIDTH-1:0] odata2);
+	output reg [DATA_WIDTH-1:0] odata2)
+	/* synthesis syn_hier = "hard" */;
 
-reg [DATA_WIDTH-1:0] memory[(1<<ADDR_WIDTH)-1:0] /* synthesis syn_ramstyle="no_rw_check" */;
+reg [DATA_WIDTH-1:0] memory[(1<<ADDR_WIDTH)-1:0]
+	/* synthesis syn_ramstyle="no_rw_check" */;
 
 always @(posedge clock1)
 begin
@@ -152,9 +158,11 @@ module true_dual_port_ram_writefirst_reg2 #(parameter integer DATA_WIDTH = 8, AD
 	input wire write2,
 	input wire [ADDR_WIDTH-1:0] addr2,
 	input wire [DATA_WIDTH-1:0] idata2,
-	output reg [DATA_WIDTH-1:0] odata2);
+	output reg [DATA_WIDTH-1:0] odata2)
+	/* synthesis syn_hier = "hard" */;
 
-reg [DATA_WIDTH-1:0] memory[(1<<ADDR_WIDTH)-1:0] /* synthesis syn_ramstyle="no_rw_check" */;
+reg [DATA_WIDTH-1:0] memory[(1<<ADDR_WIDTH)-1:0]
+	/* synthesis syn_ramstyle="no_rw_check" */;
 
 reg [DATA_WIDTH-1:0] odata1_reg;
 always @(posedge clock1)
