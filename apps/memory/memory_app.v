@@ -19,56 +19,72 @@ button resetn_inst(
 	.signal(resetn),
 	.signal_pin(resetn_pin));
 
-reg [9:0] waddr;
+reg [9:0] addr1;
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
-		waddr <= 10'h000;
+		addr1 <= 10'h000;
 	else
-		waddr <= waddr + 10'h001;
+		addr1 <= addr1 + 10'h001;
 end
 
-reg [7:0] wdata;
+reg [9:0] addr2;
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
-		wdata <= 8'h00;
+		addr2 <= 10'h000;
 	else
-		wdata <= wdata + 8'h03;
+		addr2 <= addr2 + 10'h003;
 end
 
-reg [9:0] raddr;
+reg [7:0] idata1;
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
-		raddr <= 10'h100;
+		idata1 <= 8'h00;
 	else
-		raddr <= raddr + 10'h005;
+		idata1 <= idata1 + 8'h05;
 end
 
-reg [1:0] control;
+reg [7:0] idata2;
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
-		control <= 2'b0;
+		idata2 <= 8'h00;
 	else
-		control <= control + 2'b1;
+		idata2 <= idata1 + 8'h07;
 end
 
-wire [7:0] rdata;
-true_dual_port_ram_outreg #(.DATA_WIDTH(8), .ADDR_WIDTH(10), .FIRST("WRITE")) ram_inst(
+reg [3:0] control;
+always @(posedge clock or negedge resetn)
+begin
+	if (!resetn)
+		control <= 4'b0;
+	else
+		control <= control + 4'b1;
+end
+
+wire [7:0] odata1;
+wire [7:0] odata2;
+true_dual_port_ram_writefirst_reg1 #(.DATA_WIDTH(8), .ADDR_WIDTH(10)) ram_inst(
 	.clock1(clock),
 	.enable1(control[0]),
-	.write1(1'b1),
-	.addr1(waddr),
-	.idata1(wdata),
-	.odata1(),
+	.write1(control[1]),
+	.addr1(addr1),
+	.idata1(idata1),
+	.odata1(odata1),
 	.clock2(clock),
-	.enable2(control[1]),
-	.write2(1'b0),
-	.addr2(raddr),
-	.idata2(8'b0),
-	.odata2(rdata));
+	.enable2(control[2]),
+	.write2(control[3]),
+	.addr2(addr2),
+	.idata2(idata2),
+	.odata2(odata2));
+
+reg [7:0] odata ;
+always @(posedge clock)
+begin
+	odata <= odata1 + odata2;
+end
 
 always @(posedge clock or negedge resetn)
 begin
@@ -76,7 +92,7 @@ begin
 		leds <= 8'b10101010;
 	else
 	begin
-		leds <= ~rdata;
+		leds <= ~odata;
 	end
 end
 endmodule
