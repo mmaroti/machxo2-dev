@@ -130,7 +130,7 @@ endmodule
  * an AXI stream interface with internal buffer. The default buffer size of 4
  * seems to work with the FT2232 chip, but increase it if you run into problems.
  */
-module rs232_to_axis #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200, BUFFER=4) (
+module rs232_to_axis1 #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200, BUFFER=4) (
 	input wire clock,
 	input wire resetn,
 	output wire overflow,
@@ -184,4 +184,44 @@ begin
 	else
 		afull1 <= size >= 2;
 end
+endmodule
+
+/**
+ * This module convertes an RS232 serial interface with hardware control into
+ * an AXI stream interface with internal buffer. The buffer_log2 of 3 seems to
+ * work with the FT2232 chip, but we increased the default to 4 to be more robust.
+ */
+module rs232_to_axis2 #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200, BUFFER_LOG2=4) (
+	input wire clock,
+	input wire resetn,
+	output wire overflow,
+	input wire rxd_pin, // connected to the TXD pin of receiver
+	output wire rtsn_pin, // connected to the CTSn pin of receiver
+	output wire [7:0] odata,
+	output wire ovalid,
+	input wire oready);
+
+wire [7:0] data;
+wire enable;
+wire afull;
+
+rs232_to_push #(.CLOCK_FREQ(CLOCK_FREQ), .BAUD_RATE(BAUD_RATE)) rs232_to_push_inst(
+	.clock(clock),
+	.resetn(resetn),
+	.rxd_pin(rxd_pin),
+	.rtsn_pin(rtsn_pin),
+	.odata(data),
+	.oenable(enable),
+	.oafull(afull));
+
+push_to_axis2 #(.WIDTH(8), .SIZE_LOG2(BUFFER_LOG2)) push_to_axis_inst(
+	.clock(clock),
+	.resetn(resetn),
+	.overflow(overflow),
+	.idata(data),
+	.ienable(enable),
+	.iafull(afull),
+	.odata(odata),
+	.ovalid(ovalid),
+	.oready(oready));
 endmodule
