@@ -70,7 +70,7 @@ void myftdi_open_rs232()
     printf("Setting up RTS/CTS flow control\n");
     myftdi_verify(ftdi_setflowctrl(ftdi, SIO_RTS_CTS_HS));
 
-    if (0) {
+    if (1) {
         printf("Purging buffers\n");
         myftdi_verify(ftdi_usb_purge_buffers(ftdi));
     }
@@ -197,6 +197,9 @@ void myftdi_block_read(int block_size)
     if (block_size > sizeof(buffer))
         block_size = sizeof(buffer);
 
+    for (int i = 0; i < block_size; i++)
+        buffer[i] = 0;
+
     int ret;
     myftdi_verify(ret = ftdi_read_data(ftdi, buffer, block_size));
 
@@ -227,6 +230,7 @@ int main(void)
     for (int i = 1; i < block_count; i++) {
         myftdi_block_write(block_size);
         myftdi_block_read(block_size);
+        //myftdi_read(2);
     }
     myftdi_block_read(block_size);
 

@@ -63,7 +63,7 @@ endmodule
  * with overflow error detection. The overflow flag is set on overflow, and
  * it is cleared only at reset.
  */
-module push_to_axis2 #(parameter integer WIDTH = 8, SIZE_LOG2 = 3, AFULL_LIMIT = 1 << (SIZE_LOG2-1)) (
+module push_to_axis2 #(parameter integer WIDTH = 8, SIZE_LOG2 = 4, AFULL_LIMIT = 1 << (SIZE_LOG2-1)) (
 	input wire clock,
 	input wire resetn,
 	output reg overflow,
@@ -121,7 +121,7 @@ simple_dual_port_ram_reg1 #(.DATA_WIDTH(WIDTH), .ADDR_WIDTH(SIZE_LOG2)) memory(
  */
 
 wire [SIZE_LOG2-1:0] size = waddr - raddr;
-assign renable = (!ovalid && size != 1'b0) || (ovalid && oready);
+assign renable = (|size) && (!ovalid || oready);
 
 always @(posedge clock or negedge resetn)
 begin
@@ -144,6 +144,6 @@ begin
 	if (!resetn)
 		overflow <= 1'b0;
 	else
-		overflow <= overflow || (&size && wenable && !renable);
+		overflow <= overflow || ((&size) && wenable && !renable);
 end
 endmodule
