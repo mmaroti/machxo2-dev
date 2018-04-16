@@ -19,7 +19,10 @@ button resetn_inst(
 	.signal(resetn),
 	.signal_pin(resetn_pin));
 
-/*
+//`define TRUE_DUAL_PORT
+`define SIMPLE_DUAL_PORT
+
+`ifdef TRUE_DUAL_PORT
 reg [9:0] addr1;
 always @(posedge clock or negedge resetn)
 begin
@@ -67,7 +70,7 @@ end
 
 wire [7:0] odata1;
 wire [7:0] odata2;
-true_dual_port_ram_writefirst_reg1 #(.DATA_WIDTH(8), .ADDR_WIDTH(10)) ram_inst(
+true_dual_port_ram_writefirst_reg2 #(.DATA_WIDTH(8), .ADDR_WIDTH(10)) ram_inst(
 	.clock1(clock),
 	.enable1(control[0]),
 	.write1(control[1]),
@@ -81,13 +84,14 @@ true_dual_port_ram_writefirst_reg1 #(.DATA_WIDTH(8), .ADDR_WIDTH(10)) ram_inst(
 	.idata2(idata2),
 	.odata2(odata2));
 
-reg [7:0] odata;
+reg [7:0] rdata;
 always @(posedge clock)
 begin
-	odata <= odata1 + odata2;
+	rdata <= odata1 + odata2;
 end
-*/
+`endif
 
+`ifdef SIMPLE_DUAL_PORT
 reg [3:0] waddr;
 always @(posedge clock or negedge resetn)
 begin
@@ -134,6 +138,7 @@ simple_dual_port_ram_reg1 #(.DATA_WIDTH(8), .ADDR_WIDTH(4)) ram_inst(
 	.renable(control[1]),
 	.raddr(raddr),
 	.rdata(rdata));
+`endif
 
 always @(posedge clock or negedge resetn)
 begin
