@@ -2,29 +2,11 @@
 <BaliProject version="3.2" title="memory" device="LCMXO2-7000HE-4TG144C" default_implementation="impl">
     <Options/>
     <Implementation title="impl" dir="impl" description="impl" synthesis="lse" default_strategy="Area">
-        <Options def_top="simple_dual_port_ram_reg0" top="top"/>
+        <Options def_top="push_to_axis2" top="top"/>
         <Source name="memory_app.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>
         </Source>
         <Source name="../../src/button.v" type="Verilog" type_short="Verilog">
-            <Options/>
-        </Source>
-        <Source name="../../iplib/ram_readfirst_nonreg_9x1024.ipx" type="IPX_Module" type_short="IPX">
-            <Options/>
-        </Source>
-        <Source name="../../iplib/ram_writefirst_nonreg_9x1024.ipx" type="IPX_Module" type_short="IPX">
-            <Options/>
-        </Source>
-        <Source name="../../iplib/ram_readfirst_outreg_9x1024.ipx" type="IPX_Module" type_short="IPX">
-            <Options/>
-        </Source>
-        <Source name="../../iplib/ram_writefirst_outreg_9x1024.ipx" type="IPX_Module" type_short="IPX">
-            <Options/>
-        </Source>
-        <Source name="../../iplib/ram.v" type="Verilog" type_short="Verilog">
-            <Options/>
-        </Source>
-        <Source name="../../iplib/ram_writefirst_nonreg_8x16.ipx" type="IPX_Module" type_short="IPX">
             <Options/>
         </Source>
         <Source name="../../src/tdp_ram.v" type="Verilog" type_short="Verilog">

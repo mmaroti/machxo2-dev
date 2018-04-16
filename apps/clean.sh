@@ -8,3 +8,4 @@ rm */*.ccl
 rm */._*_.vhd
 rm */generate_*.tcl
 rm */*.log
+rm */driver

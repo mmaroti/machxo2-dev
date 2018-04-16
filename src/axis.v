@@ -56,7 +56,7 @@ end
 assign ovalid = ivalid && delay[DELAY_WIDTH];
 assign iready = oready && delay[DELAY_WIDTH];
 assign odata = idata;
-endmodule	
+endmodule
 
 /**
  * Moves data from idata to odata. Data is transferred on the ports when both
@@ -182,7 +182,7 @@ end
 endmodule
 
 /**
- * Converts a push interface (with clock enable) to a axi stream interface
+ * Converts a push interface (with clock enable) to an axi stream interface
  * with overflow error detection. The overflow flag is set on overflow, and
  * it is cleared only at reset.
  */

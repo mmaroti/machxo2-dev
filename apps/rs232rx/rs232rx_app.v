@@ -28,7 +28,7 @@ localparam BAUD_RATE = 12000000;
 
 wire [7:0] data;
 wire overflow, valid, ready;
-rs232_to_axis #(.CLOCK_FREQ(133000000), .BAUD_RATE(BAUD_RATE), .BUFFER(4)) rs232_to_axis_inst(
+rs232_to_axis2 #(.CLOCK_FREQ(133000000), .BAUD_RATE(BAUD_RATE)) rs232_to_axis_inst(
     .clock(clock),
     .resetn(resetn),
 	.overflow(overflow),
