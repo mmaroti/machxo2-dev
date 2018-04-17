@@ -14,7 +14,22 @@ module axis_fifo_tb (
 	output wire ovalid,
 	input wire oready);
 
+wire [3:0] count1;
+wire [7:0] sdata1;
+
+axis_bus axis_bus_inst1 (
+	.clock(clock),
+	.resetn(resetn),
+	.data(idata),
+	.valid(ivalid),
+	.ready(iready),
+	.count(count1),
+	.sdata(sdata1),
+	.saved());
+
 wire [1:0] size1;
+assign size2 = size1 + ovalid;
+
 axis_fifo_ver1 #(.ADDR_WIDTH(2)) axis_fifo_inst (
 	.clock(clock),
 	.resetn(resetn),
@@ -26,49 +41,34 @@ axis_fifo_ver1 #(.ADDR_WIDTH(2)) axis_fifo_inst (
 	.ovalid(ovalid),
 	.oready(oready));
 
-assign size2 = size1 + ovalid;
+wire [3:0] count2;
+wire [7:0] sdata2;
+wire saved2;
+
+axis_bus axis_bus_inst2 (
+	.clock(clock),
+	.resetn(resetn),
+	.data(odata),
+	.valid(ovalid),
+	.ready(oready),
+	.count(count2),
+	.sdata(sdata2),
+	.saved(saved2));
 
 initial assume (!resetn);
-
-reg [3:0] count1;
-always @(posedge clock or negedge resetn)
-begin
-	if (!resetn)
-		count1 <= 1'b0;
-	else if (ivalid && iready)
-		count1 <= count1 + 1'b1;
-end
-
-reg [3:0] count2;
-always @(posedge clock or negedge resetn)
-begin
-	if (!resetn)
-		count2 <= 1'b0;
-	else if (ovalid && oready)
-		count2 <= count2 + 1'b1;
-end
-
-always @(posedge clock)
-begin
-	if (resetn)
-		assert (count1 == size2 + count2);
-end
-
-reg [7:0] data1;
 
 always @(posedge clock)
 begin
 	if (resetn)
 	begin
+		assert (count1 == size2 + count2);
+
 		// just to make induction proof work
 		restrict (ivalid || $past(ivalid));
 		restrict (oready || $past(oready));
 
-		if (count1 == 4 && ivalid && iready)
-			data1 <= idata;
-
-		if (count2 == 4 && ovalid && oready)
-			assert(data1 == odata);
+		if (saved2)
+			assert(sdata1 == sdata2);
 	end
 end
 endmodule
