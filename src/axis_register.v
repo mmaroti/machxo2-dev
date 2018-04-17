@@ -82,6 +82,10 @@ end
 			assert (ovalid == (size > 0));
 			assert (count1 == count2 + size);
 
+			// just to make induction proof work
+			restrict (ivalid || $past(ivalid));
+			restrict (oready || $past(oready));
+
 			if (count1 == 4 && ivalid && iready)
 				data <= idata;
 
