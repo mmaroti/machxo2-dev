@@ -46,6 +46,23 @@ begin
 	if (ovalid && oready)
 		raddr <= raddr + 1'b1;
 end
+
+`ifdef FORMAL
+	initial assert (!resetn);
+
+	always @(posedge clock)
+	begin
+		if (resetn && !$past(resetn))
+			assert (size == 0);
+
+		if (resetn && $past(resetn))
+		begin
+			assert (size == $past(size)
+				+ ($past(ivalid) && $past(iready))
+				- ($past(ovalid) && $past(oready)));
+		end
+	end
+`endif
 endmodule
 
 module axis_fifo_ver1 #(parameter integer DATA_WIDTH = 8, ADDR_WIDTH = 4) (

@@ -6,7 +6,6 @@
 module axis_fifo_tb (
 	input wire clock,
 	input wire resetn,
-	output wire [2:0] size2,
 	input wire [7:0] idata,
 	input wire ivalid,
 	output wire iready,
@@ -14,10 +13,10 @@ module axis_fifo_tb (
 	output wire ovalid,
 	input wire oready);
 
-wire [3:0] count1;
+wire [2:0] count1;
 wire [7:0] sdata1;
 
-axis_bus axis_bus_inst1 (
+axis_bus #(.COUNT_WIDTH(3)) axis_bus_inst1 (
 	.clock(clock),
 	.resetn(resetn),
 	.data(idata),
@@ -29,7 +28,7 @@ axis_bus axis_bus_inst1 (
 
 `ifdef VER1
 	wire [1:0] size1;
-	assign size2 = size1 + ovalid;
+	wire [2:0] size2 = size1 + ovalid;
 
 	axis_fifo_ver1 #(.ADDR_WIDTH(2)) axis_fifo_inst (
 		.clock(clock),
@@ -42,6 +41,8 @@ axis_bus axis_bus_inst1 (
 		.ovalid(ovalid),
 		.oready(oready));
 `else
+	wire [2:0] size2;
+
 	axis_fifo_ver0 #(.ADDR_WIDTH(2)) axis_fifo_inst (
 		.clock(clock),
 		.resetn(resetn),
@@ -54,11 +55,11 @@ axis_bus axis_bus_inst1 (
 		.oready(oready));
 `endif
 
-wire [3:0] count2;
+wire [2:0] count2;
 wire [7:0] sdata2;
 wire saved2;
 
-axis_bus axis_bus_inst2 (
+axis_bus #(.COUNT_WIDTH(3)) axis_bus_inst2 (
 	.clock(clock),
 	.resetn(resetn),
 	.data(odata),
