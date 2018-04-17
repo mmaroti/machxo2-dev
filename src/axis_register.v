@@ -71,13 +71,22 @@ end
 		ovalid && oready,
 		count2);
 
+	reg [WIDTH-1:0] data;
+
 	always @(posedge clock)
 	begin
 		if (resetn)
 		begin
 			assert (size <= 2);
-			assert (iready || ovalid);
+			assert (iready == (size < 2));
+			assert (ovalid == (size > 0));
 			assert (count1 == count2 + size);
+
+			if (count1 == 4 && ivalid && iready)
+				data <= idata;
+
+			if (count2 == 4 && ovalid && oready)
+				assert(data == odata);
 		end
 	end
 `endif
