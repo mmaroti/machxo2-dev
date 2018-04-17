@@ -1,0 +1,18 @@
+[options]
+mode prove
+#mode bmc
+#depth 20
+
+[engines]
+smtbmc z3
+
+[script]
+read_verilog -formal sdp_ram.v
+read_verilog -formal axis_fifo.v
+read_verilog -formal axis_fifo_tb.v
+prep -top axis_fifo_tb
+
+[files]
+../src/sdp_ram.v
+../src/axis_fifo.v
+axis_fifo_tb.v

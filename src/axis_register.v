@@ -64,13 +64,16 @@ end
 			assert (size <= 2);
 			assert (iready == (size < 2));
 			assert (ovalid == (size > 0));
+		end
 
-			if ($past(resetn))
-			begin
-				assert (size == $past(size) 
-					+ ($past(ivalid) && $past(iready))
-					- ($past(ovalid) && $past(oready)));
-			end
+		if (resetn && !$past(resetn))
+			assert (size == 0);
+
+		if (resetn && $past(resetn))
+		begin
+			assert (size == $past(size) 
+				+ ($past(ivalid) && $past(iready))
+				- ($past(ovalid) && $past(oready)));
 		end
 	end
 `endif
