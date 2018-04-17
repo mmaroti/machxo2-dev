@@ -59,6 +59,45 @@ assign odata = idata;
 endmodule
 
 /**
+ * This block filters out repeated data. After the reset the first
+ * value is always goes through, then only those that do not match
+ * the previous one.
+ */
+module axis_unique #(parameter integer WIDTH = 8, INITIAL = 0) (
+	input wire clock,
+	input wire resetn,
+	input wire [WIDTH-1:0] idata,
+	input wire ivalid,
+	output reg iready,
+	output reg [WIDTH-1:0] odata,
+	output reg ovalid,
+	input wire oready);
+
+always @(posedge clock or negedge resetn)
+begin
+	if (!resetn)
+		iready <= 1'b1;
+	else
+		iready <= iready || (oready && ovalid)
+end
+
+always @(posedge clock or negedge resetn)
+begin
+	if (!resetn)
+		ovalid <= 1'b0;
+	else
+		ovalid <= ivalid && idata != odata;
+end
+
+always @(posedge clock)
+begin
+	if (iready && ivalid)
+		odata <= idata;
+end
+
+endmodule
+
+/**
  * Moves data from idata to odata. Data is transferred on the ports when both
  * xvalid and xready are high on the rising edge of the clock. This block can
  * move data on every clock, and all its outputs are registered (including

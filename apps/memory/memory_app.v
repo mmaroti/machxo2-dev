@@ -19,8 +19,8 @@ button resetn_inst(
 	.signal(resetn),
 	.signal_pin(resetn_pin));
 
-//`define TRUE_DUAL_PORT
-`define SIMPLE_DUAL_PORT
+`define TRUE_DUAL_PORT
+//`define SIMPLE_DUAL_PORT
 
 `ifdef TRUE_DUAL_PORT
 reg [9:0] addr1;
@@ -70,7 +70,7 @@ end
 
 wire [7:0] odata1;
 wire [7:0] odata2;
-true_dual_port_ram_writefirst_reg2 #(.DATA_WIDTH(8), .ADDR_WIDTH(10)) ram_inst(
+true_dual_port_ram_writefirst_reg1 #(.DATA_WIDTH(8), .ADDR_WIDTH(10)) ram_inst(
 	.clock1(clock),
 	.enable1(control[0]),
 	.write1(control[1]),

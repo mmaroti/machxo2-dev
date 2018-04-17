@@ -1,0 +1,16 @@
+[options]
+mode prove
+# mode bmc
+# depth 10
+
+[engines]
+smtbmc z3
+
+[script]
+read_verilog -formal tick_counter.v
+read_verilog -formal axis_register.v
+prep -top axis_register
+
+[files]
+../src/axis_register.v
+../src/tick_counter.v
