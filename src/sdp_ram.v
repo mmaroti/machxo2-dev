@@ -26,14 +26,6 @@ begin
 end
 
 assign rdata = memory[raddr];
-
-`ifdef FORMAL
-	always @(posedge wclock)
-	begin
-		if (wenable)
-			assert (waddr != raddr);
-	end
-`endif
 endmodule
 
 /**
@@ -71,6 +63,7 @@ end
 		if (wenable && renable)
 			assert (waddr != raddr);
 	end
+
 	always @(posedge rclock)
 	begin
 		if (wenable && renable)

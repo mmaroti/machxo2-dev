@@ -27,19 +27,32 @@ axis_bus axis_bus_inst1 (
 	.sdata(sdata1),
 	.saved());
 
-wire [1:0] size1;
-assign size2 = size1 + ovalid;
+`ifdef VER1
+	wire [1:0] size1;
+	assign size2 = size1 + ovalid;
 
-axis_fifo_ver1 #(.ADDR_WIDTH(2)) axis_fifo_inst (
-	.clock(clock),
-	.resetn(resetn),
-	.size(size1),
-	.idata(idata),
-	.ivalid(ivalid),
-	.iready(iready),
-	.odata(odata),
-	.ovalid(ovalid),
-	.oready(oready));
+	axis_fifo_ver1 #(.ADDR_WIDTH(2)) axis_fifo_inst (
+		.clock(clock),
+		.resetn(resetn),
+		.size(size1),
+		.idata(idata),
+		.ivalid(ivalid),
+		.iready(iready),
+		.odata(odata),
+		.ovalid(ovalid),
+		.oready(oready));
+`else
+	axis_fifo_ver0 #(.ADDR_WIDTH(2)) axis_fifo_inst (
+		.clock(clock),
+		.resetn(resetn),
+		.size(size2),
+		.idata(idata),
+		.ivalid(ivalid),
+		.iready(iready),
+		.odata(odata),
+		.ovalid(ovalid),
+		.oready(oready));
+`endif
 
 wire [3:0] count2;
 wire [7:0] sdata2;
@@ -56,7 +69,6 @@ axis_bus axis_bus_inst2 (
 	.saved(saved2));
 
 initial assume (!resetn);
-
 always @(posedge clock)
 begin
 	if (resetn)

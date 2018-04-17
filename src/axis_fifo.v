@@ -14,6 +14,9 @@ module axis_fifo_ver0 #(parameter integer DATA_WIDTH = 8, ADDR_WIDTH = 4) (
 	output reg ovalid,
 	input wire oready);
 
+assign iready = !(&size);
+assign ovalid = (|size);
+
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
@@ -25,7 +28,7 @@ begin
 end
 
 reg [ADDR_WIDTH-1:0] raddr;
-wire [ADDR_WIDTH-1:0] waddr = raddr - size;
+wire [ADDR_WIDTH-1:0] waddr = raddr + size;
 
 simple_dual_port_ram_reg0 #(
 	.DATA_WIDTH(DATA_WIDTH),
@@ -38,9 +41,6 @@ memory (
 	.raddr(raddr),
 	.rdata(odata));
 
-assign iready = !(&size);
-assign ovalid = (|size);
-
 always @(posedge clock)
 begin
 	if (ovalid && oready)
@@ -51,7 +51,7 @@ endmodule
 module axis_fifo_ver1 #(parameter integer DATA_WIDTH = 8, ADDR_WIDTH = 4) (
 	input wire clock,
 	input wire resetn,
-	output wire [ADDR_WIDTH-1:0] size,
+	output reg [ADDR_WIDTH-1:0] size,
 	input wire [DATA_WIDTH-1:0] idata,
 	input wire ivalid,
 	output wire iready,
@@ -59,9 +59,8 @@ module axis_fifo_ver1 #(parameter integer DATA_WIDTH = 8, ADDR_WIDTH = 4) (
 	output reg ovalid,
 	input wire oready);
 
-reg [ADDR_WIDTH-1:0] waddr;
+wire [ADDR_WIDTH-1:0] waddr = raddr + size;
 reg [ADDR_WIDTH-1:0] raddr;
-assign size = waddr - raddr;
 
 wire renable = (|size) && (!ovalid || oready);
 
@@ -81,9 +80,11 @@ memory (
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
-		waddr <= 1'b0;
-	else if (ivalid && iready)
-		waddr <= waddr + 1'b1;
+		size <= 1'b0;
+	else if ((ivalid && iready) && !(renable))
+		size <= size + 1'b1;
+	else if (!(ivalid && iready) && renable)
+		size <= size - 1'b1;
 end
 
 always @(posedge clock or negedge resetn)

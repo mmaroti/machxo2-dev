@@ -10,7 +10,7 @@ smtbmc z3
 read_verilog -formal sdp_ram.v
 read_verilog -formal axis_fifo.v
 read_verilog -formal axis_bus.v
-read_verilog -formal axis_fifo_tb.v
+read_verilog -formal -DVER0 axis_fifo_tb.v
 prep -top axis_fifo_tb
 
 [files]

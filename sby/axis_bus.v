@@ -6,10 +6,9 @@
 /**
  * This module monitors an AXI stream and counts the number of
  * data items that have passed through the stream. It also 
- * saves every data that it has passed when count is 0 modulo
- * its size.
+ * saves every data that it has passed at the given rate.
  */
-module axis_bus #(parameter integer DATA_WIDTH = 8, COUNT_WIDTH = 4) (
+module axis_bus #(parameter integer DATA_WIDTH = 8, COUNT_WIDTH = 4, RATE = 13) (
 	input wire clock,
 	input wire resetn,
 	input wire [DATA_WIDTH-1:0] data,
@@ -27,6 +26,22 @@ begin
 		count <= count + 1'b1;
 end
 
+localparam integer RATE_WIDTH = $clog2(RATE - 1);
+reg [RATE_WIDTH-1:0] rate;
+
+always @(posedge clock or negedge resetn)
+begin
+	if (!resetn)
+		rate <= 1'b0;
+	else if (valid && ready)
+	begin
+		if (rate == 0)
+			rate <= RATE - 1;
+		else
+			rate <= rate - 1'b0;
+	end
+end
+
 always @(posedge clock or negedge resetn)
 begin
 	if (!resetn)
@@ -34,7 +49,7 @@ begin
 		sdata <= 1'bx;
 		saved <= 1'b0;
 	end
-	else if (count == 0 && valid && ready)
+	else if (rate == 0 && valid && ready)
 	begin
 		sdata <= data;
 		saved <= 1'b1;
