@@ -55,23 +55,7 @@ begin
 end
 
 `ifdef FORMAL
-	initial assume (!resetn);
-
-	wire [2:0] count1;
-	tick_counter #(.WIDTH(3)) tick_counter_inst1 (
-		clock,
-		resetn,
-		ivalid && iready,
-		count1);
-
-	wire [2:0] count2;
-	tick_counter #(.WIDTH(3)) tick_counter_inst2 (
-		clock,
-		resetn,
-		ovalid && oready,
-		count2);
-
-	reg [WIDTH-1:0] data;
+	initial assert (!resetn);
 
 	always @(posedge clock)
 	begin
@@ -80,17 +64,13 @@ end
 			assert (size <= 2);
 			assert (iready == (size < 2));
 			assert (ovalid == (size > 0));
-			assert (count1 == count2 + size);
 
-			// just to make induction proof work
-			restrict (ivalid || $past(ivalid));
-			restrict (oready || $past(oready));
-
-			if (count1 == 4 && ivalid && iready)
-				data <= idata;
-
-			if (count2 == 4 && ovalid && oready)
-				assert(data == odata);
+			if ($past(resetn))
+			begin
+				assert (size == $past(size) 
+					+ ($past(ivalid) && $past(iready))
+					- ($past(ovalid) && $past(oready)));
+			end
 		end
 	end
 `endif

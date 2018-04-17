@@ -7,10 +7,10 @@ mode prove
 smtbmc z3
 
 [script]
-read_verilog -formal tick_counter.v
 read_verilog -formal axis_register.v
-prep -top axis_register
+read_verilog -formal axis_register_tb.v
+prep -top axis_register_tb
 
 [files]
 ../src/axis_register.v
-../src/tick_counter.v
+axis_register_tb.v
