@@ -11,7 +11,7 @@ module axis_fifo_ver0 #(parameter integer DATA_WIDTH = 8, ADDR_WIDTH = 4) (
 	input wire ivalid,
 	output wire iready,
 	output wire [DATA_WIDTH-1:0] odata,
-	output reg ovalid,
+	output wire ovalid,
 	input wire oready);
 
 assign iready = !(&size);
