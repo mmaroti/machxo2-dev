@@ -3,6 +3,8 @@
  * This is free software released under the 3-clause BSD licence.
  */
 
+`default_nettype none
+
 /**
  * Converts a push interface (with clock enable) to an axi stream interface
  * with overflow error detection. The overflow flag is set on overflow, and

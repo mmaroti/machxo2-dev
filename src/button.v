@@ -3,6 +3,8 @@
  * This is free software released under the 3-clause BSD licence.
  */
 
+`default_nettype none
+
 /**
  * Debounces an input pin and produces a stable signal by ensuring that
  * the new state is held for a specified time. The DELAY parameter is

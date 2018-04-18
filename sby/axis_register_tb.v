@@ -3,6 +3,8 @@
  * This is free software released under the 3-clause BSD licence.
  */
 
+`default_nettype none
+
 module axis_register_tb (
 	input wire clock,
 	input wire resetn,

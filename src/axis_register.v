@@ -3,6 +3,8 @@
  * This is free software released under the 3-clause BSD licence.
  */
 
+`default_nettype none
+
 /**
  * Moves data from idata to odata. Data is transferred on the ports when both
  * xvalid and xready are high on the rising edge of the clock. This block can

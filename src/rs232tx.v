@@ -3,6 +3,8 @@
  * This is free software released under the 3-clause BSD licence.
  */
 
+`default_nettype none
+
 /**
  * This module convertes an AXI stream byte stream to a RS232 serial interface
  * with hardware flow control. The implementation might start the transmission

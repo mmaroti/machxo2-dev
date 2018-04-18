@@ -3,6 +3,8 @@
  * This is free software released under the 3-clause BSD licence.
  */
 
+`default_nettype none
+
 /**
  * This module monitors an AXI stream and counts the number of
  * data items that have passed through the stream. It also 

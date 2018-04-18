@@ -3,6 +3,8 @@
  * This is free software released under the 3-clause BSD licence.
  */
 
+`default_nettype none
+
 module top(
 	output reg [7:0] leds,
 	input wire resetn_pin);

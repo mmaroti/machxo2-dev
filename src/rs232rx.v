@@ -3,6 +3,8 @@
  * This is free software released under the 3-clause BSD licence.
  */
 
+`default_nettype none
+
 /**
  * This module convertes an RS232 serial interface with hardware control into
  * a push based handshake with almost full signal. The rxd_pin must be connected

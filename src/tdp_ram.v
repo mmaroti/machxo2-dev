@@ -3,6 +3,8 @@
  * This is free software released under the 3-clause BSD licence.
  */
 
+`default_nettype none
+
 /**
  * This ram will be inferred as a DP8KC with read before write and 
  * non-registered output (odata appears one clock cycle after enable).

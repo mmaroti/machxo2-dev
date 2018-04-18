@@ -3,6 +3,8 @@
  * This is free software released under the 3-clause BSD licence.
  */
 
+`default_nettype none
+
 /**
  * Just a simple counter producing output through an axis interface.
  * The ovalid signal is always true, the couter is incremented when

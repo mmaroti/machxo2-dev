@@ -3,6 +3,8 @@
  * This is free software released under the 3-clause BSD licence.
  */
 
+`default_nettype none
+
 /**
  * This ram is inferred as distributed pseudo dual port ram with 
  * non-registered output.

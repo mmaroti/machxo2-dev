@@ -3,6 +3,8 @@
  * This is free software released under the 3-clause BSD licence.
  */
 
+`default_nettype none
+
 /**
  * Single clock axis fifo with non-registered output where the number of 
  * elements within the fifo is size.

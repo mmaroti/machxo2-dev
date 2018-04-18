@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BaliProject version="3.2" title="rs232rx" device="LCMXO2-7000HE-4TG144C" default_implementation="impl">
     <Options/>
-    <Implementation title="impl" dir="impl" description="impl" synthesis="lse" default_strategy="Timing">
-        <Options def_top="simple_dual_port_ram_reg0" top="top"/>
+    <Implementation title="impl" dir="impl" description="impl" synthesis="lse" default_strategy="Area">
+        <Options def_top="axis_fifo_ver2" top="top"/>
         <Source name="rs232rx_app.v" type="Verilog" type_short="Verilog">
             <Options top_module="top"/>
         </Source>
@@ -19,6 +19,12 @@
             <Options/>
         </Source>
         <Source name="../../src/sdp_ram.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="../../src/axis_fifo.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="../../src/push_to_axis.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
         <Source name="impl/impl.xcf" type="Programming Project File" type_short="Programming">
