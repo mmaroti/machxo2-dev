@@ -16,7 +16,7 @@ module axis_fifo_tb (
 wire [2:0] count1;
 wire [7:0] sdata1;
 
-axis_bus #(.COUNT_WIDTH(3)) axis_bus_inst1 (
+axis_bus #(.COUNT_WIDTH(3)) bus1 (
 	.clock(clock),
 	.resetn(resetn),
 	.data(idata),
@@ -27,10 +27,40 @@ axis_bus #(.COUNT_WIDTH(3)) axis_bus_inst1 (
 	.saved());
 
 `ifdef VER1
+	wire [1:0] size2;
+
+	axis_fifo_ver1 #(.ADDR_WIDTH(2)) fifo (
+		.clock(clock),
+		.resetn(resetn),
+		.size(size2),
+		.idata(idata),
+		.ivalid(ivalid),
+		.iready(iready),
+		.odata(odata),
+		.ovalid(ovalid),
+		.oready(oready));
+`endif
+
+`ifdef VER2
+	wire [1:0] size2;
+
+	axis_fifo_ver2 #(.ADDR_WIDTH(2)) fifo (
+		.clock(clock),
+		.resetn(resetn),
+		.size(size2),
+		.idata(idata),
+		.ivalid(ivalid),
+		.iready(iready),
+		.odata(odata),
+		.ovalid(ovalid),
+		.oready(oready));
+`endif
+
+`ifdef VER3
 	wire [1:0] size1;
 	wire [2:0] size2 = size1 + ovalid;
 
-	axis_fifo_ver1 #(.ADDR_WIDTH(2)) axis_fifo_inst (
+	axis_fifo_ver3 #(.ADDR_WIDTH(2)) fifo (
 		.clock(clock),
 		.resetn(resetn),
 		.size(size1),
@@ -40,13 +70,16 @@ axis_bus #(.COUNT_WIDTH(3)) axis_bus_inst1 (
 		.odata(odata),
 		.ovalid(ovalid),
 		.oready(oready));
-`else
-	wire [1:0] size2;
+`endif
 
-	axis_fifo_ver0 #(.ADDR_WIDTH(2)) axis_fifo_inst (
+`ifdef VER4
+	wire [1:0] size1;
+	wire [2:0] size2 = size1 + ovalid;
+
+	axis_fifo_ver4 #(.ADDR_WIDTH(2)) fifo (
 		.clock(clock),
 		.resetn(resetn),
-		.size(size2),
+		.size(size1),
 		.idata(idata),
 		.ivalid(ivalid),
 		.iready(iready),
@@ -59,7 +92,7 @@ wire [2:0] count2;
 wire [7:0] sdata2;
 wire saved2;
 
-axis_bus #(.COUNT_WIDTH(3)) axis_bus_inst2 (
+axis_bus #(.COUNT_WIDTH(3)) bus2 (
 	.clock(clock),
 	.resetn(resetn),
 	.data(odata),

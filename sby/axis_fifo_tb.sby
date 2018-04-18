@@ -1,6 +1,8 @@
 [tasks]
-task1 task_prove task_ver0
-task2 task_prove task_ver1
+task1 task_prove task_ver1
+task2 task_prove task_ver2
+task3 task_prove task_ver3
+task4 task_prove task_ver4
 
 [options]
 task_prove: mode prove
@@ -15,8 +17,10 @@ abc pdr
 read_verilog -formal sdp_ram.v
 read_verilog -formal axis_fifo.v
 read_verilog -formal axis_bus.v
-task_ver0: read_verilog -formal -DVER0 axis_fifo_tb.v
 task_ver1: read_verilog -formal -DVER1 axis_fifo_tb.v
+task_ver2: read_verilog -formal -DVER2 axis_fifo_tb.v
+task_ver3: read_verilog -formal -DVER3 axis_fifo_tb.v
+task_ver4: read_verilog -formal -DVER4 axis_fifo_tb.v
 prep -top axis_fifo_tb
 
 [files]

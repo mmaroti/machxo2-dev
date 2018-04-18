@@ -191,7 +191,7 @@ endmodule
  * an AXI stream interface with internal buffer. The buffer_log2 of 3 seems to
  * work with the FT2232 chip, but we increased the default to 4 to be more robust.
  */
-module rs232_to_axis2 #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200, BUFFER_LOG2=3) (
+module rs232_to_axis2 #(parameter real CLOCK_FREQ=133000000, BAUD_RATE=115200, BUFFER_LOG2=4) (
 	input wire clock,
 	input wire resetn,
 	output wire overflow,
@@ -214,7 +214,7 @@ rs232_to_push #(.CLOCK_FREQ(CLOCK_FREQ), .BAUD_RATE(BAUD_RATE)) rs232_to_push_in
 	.oenable(enable),
 	.oafull(afull));
 
-push_to_axis2 #(.WIDTH(8), .SIZE_LOG2(BUFFER_LOG2), .AFULL_LIMIT(2)) push_to_axis_inst(
+push_to_axis_ver2 #(.DATA_WIDTH(8), .ADDR_WIDTH(BUFFER_LOG2)) push_to_axis_inst(
 	.clock(clock),
 	.resetn(resetn),
 	.overflow(overflow),
