@@ -83,7 +83,7 @@ begin
 
 	if (resetn && $past(resetn))
 	begin
-		assert (size2 == $past(size2 
+		assert (size2 == $past(size2
 			+ (ivalid && iready) - (ovalid && oready)));
 
 		// just to make induction proof work

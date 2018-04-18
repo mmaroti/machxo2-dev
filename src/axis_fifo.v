@@ -50,6 +50,10 @@ begin
 	if (ovalid && oready)
 		raddr <= raddr + 1'b1;
 end
+
+`ifdef FORMAL
+	initial assert (!resetn);
+`endif
 endmodule
 
 /**
@@ -112,4 +116,14 @@ begin
 	else
 		ovalid <= (|size) || (ovalid && !oready);
 end
+
+`ifdef FORMAL
+	initial assert (!resetn);
+
+	always @(posedge clock)
+	begin
+		if (resetn)
+			assert (size <= 1 || ovalid);
+	end
+`endif
 endmodule

@@ -1,16 +1,17 @@
 [options]
 mode prove
-# mode bmc
-# depth 40
 
 [engines]
-smtbmc z3
+#smtbmc z3
+abc pdr
 
 [script]
 read_verilog -formal axis_register.v
+read_verilog -formal axis_bus.v
 read_verilog -formal axis_register_tb.v
 prep -top axis_register_tb
 
 [files]
 ../src/axis_register.v
+axis_bus.v
 axis_register_tb.v

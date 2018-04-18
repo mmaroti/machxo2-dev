@@ -8,7 +8,8 @@ task_prove: mode prove
 #task_bmc: depth 20
 
 [engines]
-smtbmc z3
+#smtbmc z3
+abc pdr
 
 [script]
 read_verilog -formal sdp_ram.v
