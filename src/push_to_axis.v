@@ -24,7 +24,7 @@ module push_to_axis_ver1 #(parameter integer DATA_WIDTH = 8, ADDR_WIDTH = 4, AFU
 wire [ADDR_WIDTH-1:0] size;
 wire iready;
 
-axis_fifo_ver1 #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) fifo (
+axis_fifo_ver1 #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) axis_fifo_inst (
 	.clock(clock),
 	.resetn(resetn),
 	.size(size),
@@ -65,7 +65,7 @@ module push_to_axis_ver2 #(parameter integer DATA_WIDTH = 8, ADDR_WIDTH = 4, AFU
 wire [ADDR_WIDTH-1:0] size;
 wire iready;
 
-axis_fifo_ver2 #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) fifo (
+axis_fifo_ver2 #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) axis_fifo_inst (
 	.clock(clock),
 	.resetn(resetn),
 	.size(size),
@@ -106,7 +106,7 @@ module push_to_axis_ver3 #(parameter integer DATA_WIDTH = 8, ADDR_WIDTH = 4, AFU
 wire [ADDR_WIDTH-1:0] size;
 wire iready;
 
-axis_fifo_ver3 #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) fifo (
+axis_fifo_ver3 #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) axis_fifo_inst (
 	.clock(clock),
 	.resetn(resetn),
 	.size(size),
@@ -147,7 +147,7 @@ module push_to_axis_ver4 #(parameter integer DATA_WIDTH = 8, ADDR_WIDTH = 4, AFU
 wire [ADDR_WIDTH-1:0] size;
 wire iready;
 
-axis_fifo_ver4 #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) fifo (
+axis_fifo_ver4 #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) axis_fifo_inst (
 	.clock(clock),
 	.resetn(resetn),
 	.size(size),
@@ -215,7 +215,7 @@ begin
 		raddr <= raddr + 1'b1;
 end
 
-simple_dual_port_ram_reg1 #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) memory(
+simple_dual_port_ram_reg1 #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) memory (
 	.wclock(clock),
 	.wenable(wenable),
 	.waddr(waddr),

@@ -69,8 +69,8 @@ end
  * to align the data sampling to the middle of the bit streams. Also, this
  * is rounded down bacause of the logic has a single clock delay.
  */
-localparam [63:0] BAUD_COUNT_HALF = 0.5 * CLOCK_FREQ / BAUD_RATE - 0.5;
-localparam [63:0] BAUD_COUNT_FULL = 1.0 * CLOCK_FREQ / BAUD_RATE;
+localparam integer BAUD_COUNT_HALF = 0.5 * CLOCK_FREQ / BAUD_RATE - 0.5;
+localparam integer BAUD_COUNT_FULL = 1.0 * CLOCK_FREQ / BAUD_RATE;
 localparam integer BAUD_WIDTH = $clog2(BAUD_COUNT_FULL - 1);
 
 reg [BAUD_WIDTH:0] baud_counter;
@@ -207,7 +207,7 @@ wire [7:0] data;
 wire enable;
 wire afull;
 
-rs232_to_push #(.CLOCK_FREQ(CLOCK_FREQ), .BAUD_RATE(BAUD_RATE)) rs232_to_push_inst(
+rs232_to_push #(.CLOCK_FREQ(CLOCK_FREQ), .BAUD_RATE(BAUD_RATE)) rs232_to_push_inst (
 	.clock(clock),
 	.resetn(resetn),
 	.rxd_pin(rxd_pin),
@@ -216,7 +216,7 @@ rs232_to_push #(.CLOCK_FREQ(CLOCK_FREQ), .BAUD_RATE(BAUD_RATE)) rs232_to_push_in
 	.oenable(enable),
 	.oafull(afull));
 
-push_to_axis_ver2 #(.DATA_WIDTH(8), .ADDR_WIDTH(BUFFER_LOG2)) push_to_axis_inst(
+push_to_axis_ver2 #(.DATA_WIDTH(8), .ADDR_WIDTH(BUFFER_LOG2)) push_to_axis_inst (
 	.clock(clock),
 	.resetn(resetn),
 	.overflow(overflow),
