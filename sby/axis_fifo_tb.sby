@@ -1,7 +1,11 @@
+[tasks]
+task1 task_prove task_ver0
+task2 task_prove task_ver1
+
 [options]
-mode prove
-#mode bmc
-#depth 20
+task_prove: mode prove
+#task_bmc: mode bmc
+#task_bmc: depth 20
 
 [engines]
 smtbmc z3
@@ -10,7 +14,8 @@ smtbmc z3
 read_verilog -formal sdp_ram.v
 read_verilog -formal axis_fifo.v
 read_verilog -formal axis_bus.v
-read_verilog -formal -DVER0 axis_fifo_tb.v
+task_ver0: read_verilog -formal -DVER0 axis_fifo_tb.v
+task_ver1: read_verilog -formal -DVER1 axis_fifo_tb.v
 prep -top axis_fifo_tb
 
 [files]

@@ -3,6 +3,10 @@
  * This is free software released under the 3-clause BSD licence.
  */
 
+/**
+ * Single clock axis fifo with non-registered output where the number of 
+ * elements within the fifo is size.
+ */
 module axis_fifo_ver0 #(parameter integer DATA_WIDTH = 8, ADDR_WIDTH = 4) (
 	input wire clock,
 	input wire resetn,
@@ -46,25 +50,12 @@ begin
 	if (ovalid && oready)
 		raddr <= raddr + 1'b1;
 end
-
-`ifdef FORMAL
-	initial assert (!resetn);
-
-	always @(posedge clock)
-	begin
-		if (resetn && !$past(resetn))
-			assert (size == 0);
-
-		if (resetn && $past(resetn))
-		begin
-			assert (size == $past(size)
-				+ ($past(ivalid) && $past(iready))
-				- ($past(ovalid) && $past(oready)));
-		end
-	end
-`endif
 endmodule
 
+/**
+ * Single clock axis fifo with registered output where the number of 
+ * elements within the fifo is size + ovalid.
+ */
 module axis_fifo_ver1 #(parameter integer DATA_WIDTH = 8, ADDR_WIDTH = 4) (
 	input wire clock,
 	input wire resetn,
@@ -121,21 +112,4 @@ begin
 	else
 		ovalid <= (|size) || (ovalid && !oready);
 end
-
-`ifdef FORMAL
-	initial assert (!resetn);
-
-	always @(posedge clock)
-	begin
-		if (resetn && !$past(resetn))
-			assert (size == 0 && !ovalid);
-
-		if (resetn && $past(resetn))
-		begin
-			assert (size + ovalid == $past(size) + $past(ovalid)
-				+ ($past(ivalid) && $past(iready))
-				- ($past(ovalid) && $past(oready)));
-		end
-	end
-`endif
 endmodule

@@ -6,7 +6,7 @@
 /**
  * This module monitors an AXI stream and counts the number of
  * data items that have passed through the stream. It also 
- * saves every data that it has passed when counter is 1 module
+ * saves every data that it has passed when counter is 1 modulo
  * the size.
  */
 module axis_bus #(parameter integer DATA_WIDTH = 8, COUNT_WIDTH = 4) (

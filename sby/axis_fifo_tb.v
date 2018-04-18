@@ -41,7 +41,7 @@ axis_bus #(.COUNT_WIDTH(3)) axis_bus_inst1 (
 		.ovalid(ovalid),
 		.oready(oready));
 `else
-	wire [2:0] size2;
+	wire [1:0] size2;
 
 	axis_fifo_ver0 #(.ADDR_WIDTH(2)) axis_fifo_inst (
 		.clock(clock),
@@ -70,18 +70,25 @@ axis_bus #(.COUNT_WIDTH(3)) axis_bus_inst2 (
 	.saved(saved2));
 
 initial assume (!resetn);
+
 always @(posedge clock)
 begin
 	if (resetn)
 	begin
 		assert (count1 == size2 + count2);
 
+		if (saved2)
+			assert(sdata1 == sdata2);
+	end
+
+	if (resetn && $past(resetn))
+	begin
+		assert (size2 == $past(size2 
+			+ (ivalid && iready) - (ovalid && oready)));
+
 		// just to make induction proof work
 		restrict (ivalid || $past(ivalid));
 		restrict (oready || $past(oready));
-
-		if (saved2)
-			assert(sdata1 == sdata2);
 	end
 end
 endmodule
